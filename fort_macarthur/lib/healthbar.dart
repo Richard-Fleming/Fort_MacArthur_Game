@@ -1,26 +1,17 @@
-import 'dart:math' as math;
 import 'dart:ui';
-
-import 'package:flame/anchor.dart';
-import 'package:flame/gestures.dart';
 import 'package:flame/components/component.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
-import 'package:flame/game.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
-
-class Palette {
-  static const PaletteEntry bg = BasicPalette.white;
-}
 
 class HealthBar extends PositionComponent {
   static const int MAX_OPAQUE = 255;
   static double health = 10.0;
   static int currentFade = 255;
-  Paint bgColor = Palette.bg.paint;
   late Paint barColor;
+  final double left;
+  final double top;
 
-  HealthBar() {
+  HealthBar(this.left, this.top) {
     barColor = PaletteEntry(Color.fromARGB(MAX_OPAQUE, 255, 0, 0)).paint;
   }
 
@@ -28,9 +19,7 @@ class HealthBar extends PositionComponent {
   void render(Canvas c) {
     prepareCanvas(c);
 
-    c.drawRect(Rect.fromLTWH(0, 0, width, height), bgColor);
     c.drawRect(const Rect.fromLTWH(0, 0, 3, 3), barColor);
-    // fading[0] is pure red, fading[100] is completely opaque
   }
 
   void applyPaint() {
