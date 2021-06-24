@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../device.dart';
+import 'gamePlay.dart';
+import 'options.dart';
 
 class MainMenu extends StatefulWidget {
-  /*
-  const MainMenu({Key? key}) : super(key: key);
-
-} */
   @override
   _MainMenuPageState createState() => _MainMenuPageState();
 }
@@ -44,14 +43,11 @@ class _MainMenuPageState extends State<MainMenu> {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
-                  // Push and replace current screen (i.e MainMenu) with
-                  // SelectSpaceship(), so that player can select a spaceship.
-                  /* Navigator.of(context).pushReplacement(
+                  Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => // TODO add the next page here 
-                      ,
+                      builder: (context) => GamePlay(),
                     ),
-                  ); */
+                  );
                 },
                 child: Text('Play'),
               ),
@@ -62,9 +58,25 @@ class _MainMenuPageState extends State<MainMenu> {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Navigate to options screen.
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => Options(),
+                    ),
+                  );
                 },
                 child: Text('Options'),
+              ),
+            ),
+
+            // Options button.
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 3,
+              child: ElevatedButton(
+                onPressed: () {
+                  SystemNavigator.pop();
+                  // TODO when i tried to pop out of the nav builder stack i get trapped on a blank page so this needs fixing here
+                },
+                child: Text('Exit'),
               ),
             ),
           ],
