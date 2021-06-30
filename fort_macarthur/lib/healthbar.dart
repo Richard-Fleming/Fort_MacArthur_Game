@@ -19,7 +19,7 @@ class HealthBar extends PositionComponent {
   void render(Canvas c) {
     prepareCanvas(c);
 
-    c.drawRect(const Rect.fromLTWH(0, 0, 3, 3), barColor);
+    c.drawRect(Rect.fromLTWH(0, 0, health, 3), barColor);
   }
 
   void applyPaint() {
