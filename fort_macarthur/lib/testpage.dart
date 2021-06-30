@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/game.dart';
 import 'device.dart';
 
 class TestPage extends StatefulWidget {
@@ -27,6 +28,17 @@ class _TestState extends State<TestPage> {
                 Text(
                   "Test",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GamePage(),
+                      ),
+                    );
+                  },
+                  child: Text("Game"),
                 )
               ]))),
     );
