@@ -13,8 +13,7 @@ class Options extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              SystemNavigator.pop();
-              // TODO when i tried to pop out of the nav builder stack i get trapped on a blank page so this needs fixing here
+              Navigator.of(context).pop();
             },
             child: Text('Leave'),
           ),

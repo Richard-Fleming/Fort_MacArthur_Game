@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fort_macarthur/customDrawer.dart';
 
 import '../device.dart';
 import 'gamePlay.dart';
@@ -11,6 +12,7 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuPageState extends State<MainMenu> {
+  int index = 5;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,18 +67,6 @@ class _MainMenuPageState extends State<MainMenu> {
                   );
                 },
                 child: Text('Options'),
-              ),
-            ),
-
-            // Options button.
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 3,
-              child: ElevatedButton(
-                onPressed: () {
-                  SystemNavigator.pop();
-                  // TODO when i tried to pop out of the nav builder stack i get trapped on a blank page so this needs fixing here
-                },
-                child: Text('Exit'),
               ),
             ),
           ],
