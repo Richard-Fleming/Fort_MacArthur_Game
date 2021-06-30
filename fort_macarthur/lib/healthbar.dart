@@ -1,41 +1,82 @@
 import 'dart:ui';
-import 'package:flame/components/component.dart';
-import 'package:flame/palette.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 class HealthBar extends PositionComponent {
   static const int MAX_OPAQUE = 255;
+
+  static const maxHealth = 10.0;
+  static const int fadeRate = 10;
   static double health = 10.0;
   static int currentFade = 255;
+
   late Paint barColor;
+  late Paint bgColor;
   final double left;
   final double top;
 
+  bool fade = false;
+
   HealthBar(this.left, this.top) {
-    barColor = PaletteEntry(Color.fromARGB(MAX_OPAQUE, 255, 0, 0)).paint;
+    // bar color starts out opaque
+    applyPaint();
+  }
+
+  void applyPaint() {
+    barColor = Paint()..color = Color.fromARGB(currentFade, 255, 0, 0);
+    bgColor = Paint()..color = Color.fromARGB(currentFade, 200, 200, 200);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    if (fade) {
+      fadeIn();
+    } else
+      fadeOut();
   }
 
   @override
   void render(Canvas c) {
-    prepareCanvas(c);
-
-    c.drawRect(Rect.fromLTWH(0, 0, health, 3), barColor);
+    super.render(c);
+    c.drawRect(
+        Rect.fromLTWH(left - 10, top - 7.5, maxHealth * 12, 50), bgColor);
+    c.drawRect(Rect.fromLTWH(left, top, health * 10, 35), barColor);
   }
 
-  void applyPaint() {
-    barColor = PaletteEntry(Color.fromARGB(currentFade, 255, 0, 0)).paint;
+  void setFade(bool isFading) {
+    fade = isFading;
+  }
+
+  /// Adjust Health based on amount passed in.
+  /// If health goes over the limit on either side,
+  /// it will be reset to the limit.
+  /// @amount Amount to adjust health by
+  void manageHealth(int amount) {
+    health += amount;
+
+    if (health > maxHealth)
+      health = maxHealth;
+    else if (health < 0) health = 0;
   }
 
   void fadeIn() {
     if (currentFade < MAX_OPAQUE) {
-      currentFade += 1;
+      currentFade += fadeRate;
+      if (currentFade > MAX_OPAQUE) currentFade = MAX_OPAQUE;
+
+      print(currentFade);
       applyPaint();
     }
   }
 
   void fadeOut() {
     if (currentFade > 0) {
-      currentFade -= 1;
+      currentFade -= fadeRate;
+      if (currentFade < 0) currentFade = 0;
+
+      print(currentFade);
       applyPaint();
     }
   }
