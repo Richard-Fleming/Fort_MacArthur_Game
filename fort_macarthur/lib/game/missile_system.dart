@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
+import 'package:fort_macarthur/game/explosion.dart';
 
 import 'game_object.dart';
 
@@ -15,7 +16,7 @@ class MissileSystem {
   late GameObjectRect base;
   late GameObjectRect missile;
   late GameObjectRect tap;
-  late GameObjectCircle explosion;
+  List<Explosion> explosions = [];
 
   double missileSpeed = 300;
   double explosionInitialRadius = 10;
@@ -35,11 +36,6 @@ class MissileSystem {
 
     tap = new GameObjectRect(
         size: Vector2(10, 10),
-        color: Color(0xFFFFFFFF),
-        position: Vector2.zero());
-
-    explosion = new GameObjectCircle(
-        radius: explosionInitialRadius,
         color: Color(0xFFFFFFFF),
         position: Vector2.zero());
 
@@ -63,8 +59,8 @@ class MissileSystem {
     if (!missileLaunched) {
       isPressed = true;
       tap.setPosition(
-          Vector2(event.eventPosition.game.x, event.eventPosition.game.y));
-      missile.setPosition(base.center());
+          Vector2(event.eventPosition.game.x, event.eventPosition.game.y) -
+              tap.centerPoint());
       missileDirection = (tap.position - missile.position).normalized();
     }
   }
@@ -73,7 +69,8 @@ class MissileSystem {
     if (!missileLaunched) {
       isPressed = true;
       tap.setPosition(
-          Vector2(details.eventPosition.game.x, details.eventPosition.game.y));
+          Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
+              tap.centerPoint());
       missile.setPosition(base.center());
       missileDirection = (tap.position - missile.position).normalized();
     }
@@ -83,7 +80,8 @@ class MissileSystem {
     if (!missileLaunched) {
       isPressed = true;
       tap.setPosition(
-          Vector2(details.eventPosition.game.x, details.eventPosition.game.y));
+          Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
+              tap.centerPoint());
       missile.setPosition(base.center());
       missileDirection = (tap.position - missile.position).normalized();
     }
@@ -98,34 +96,23 @@ class MissileSystem {
     }
   }
 
-  void explode() async {
-    explosionTriggered = false;
-    await Future.delayed(Duration(milliseconds: 200), () {
-      explosionVisible = false;
-      explosion.setRadius(explosionInitialRadius);
-    });
-  }
-
   void update(double dt) {
     if (missileLaunched) {
       missile.update(dt);
       missile.position.add(missileDirection * missileSpeed * dt);
 
       if (missile.position.y < tap.position.y) {
-        explosion.position = missile.position;
-        explosionTriggered = true;
-        explosionVisible = true;
+        explosions.add(Explosion(position: missile.position));
         missile.setPosition(base.center());
         missileLaunched = false;
         isPressed = false;
       }
     }
 
-    if (explosionTriggered) {
-      explosion.update(dt);
-      explosion.updateRadius(40, dt);
-      if (explosion.radius > 60) {
-        explode();
+    for (int i = explosions.length - 1; i >= 0; --i) {
+      explosions.elementAt(i).update(dt);
+      if (!explosions.elementAt(i).alive) {
+        explosions.removeAt(i);
       }
     }
   }
@@ -138,10 +125,11 @@ class MissileSystem {
 
     if (isPressed || missileLaunched) {
       tap.render(canvas);
-      canvas.drawLine(lineStart.toOffset(), tap.position.toOffset(), whiteBox);
+      canvas.drawLine(lineStart.toOffset(),
+          (tap.position + tap.centerPoint()).toOffset(), whiteBox);
     }
 
-    if (explosionVisible) {
+    for (Explosion explosion in explosions) {
       explosion.render(canvas);
     }
   }

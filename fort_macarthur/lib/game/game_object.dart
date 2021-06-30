@@ -20,6 +20,14 @@ class GameObjectRect {
         new Rect.fromLTWH(this.position.x, this.position.y, size.x, size.y);
   }
 
+  // void setRotation(double rotation){
+  //   collider.
+  // }
+
+  Vector2 centerPoint() {
+    return Vector2(size.x / 2, size.y / 2);
+  }
+
   Vector2 center() {
     return Vector2(collider.center.dx, collider.center.dy);
   }
