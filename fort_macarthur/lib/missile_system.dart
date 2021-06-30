@@ -7,7 +7,7 @@ import 'game_object.dart';
 
 // class that handles tap events, launching missiles, and detonating
 // the missiles
-class MissileSystem extends BaseGame with PanDetector {
+class MissileSystem {
   Vector2 touchPosition = Vector2.zero();
   Vector2 lineStart = Vector2.zero();
   Vector2 missileDirection = Vector2.zero();
@@ -47,58 +47,54 @@ class MissileSystem extends BaseGame with PanDetector {
         size: Vector2.zero(),
         color: Color(0xFFFFFFFF),
         position: Vector2.zero());
+  }
+
+  void baseInit(Vector2 displaySize) {
+    base = new GameObjectRect(
+      size: Vector2(50, 30),
+      color: Color(0xFFFFFFFF),
+      position: Vector2((displaySize.x / 2) - 30, displaySize.y - 30),
+    );
 
     lineStart = base.center();
   }
 
-  void baseInit() {
-    base = new GameObjectRect(
-      size: Vector2(50, 30),
-      color: Color(0xFFFFFFFF),
-      position: Vector2((size.x / 2) - 30, size.y - 30),
-    );
-  }
-
-  Future<void> onLoad() async {
-    baseInit();
-  }
-
-  void onPanStart(DragStartInfo details) {
-    if (!missileLaunched) {
-      isPressed = true;
-      tap.setPosition(
-          Vector2(details.eventPosition.game.x, details.eventPosition.game.y));
-      missile.setPosition(base.center());
-      missileDirection = (tap.position - missile.position).normalized();
-    }
-  }
-
-  void onPanUpdate(DragUpdateInfo details) {
-    if (!missileLaunched) {
-      isPressed = true;
-      tap.setPosition(
-          Vector2(details.eventPosition.game.x, details.eventPosition.game.y));
-      missile.setPosition(base.center());
-      missileDirection = (tap.position - missile.position).normalized();
-    }
-  }
-
-  void onPanEnd(DragEndInfo details) {
-    if (!missileLaunched && tap.position.y < base.position.y) {
-      missileLaunched = true;
-      isPressed = true;
-    } else {
-      isPressed = false;
-    }
-  }
-
-  void onTapDown(TapDownInfo event) {
+  void launchMissileOnTap(TapDownInfo event) {
     if (!missileLaunched) {
       isPressed = true;
       tap.setPosition(
           Vector2(event.eventPosition.game.x, event.eventPosition.game.y));
       missile.setPosition(base.center());
       missileDirection = (tap.position - missile.position).normalized();
+    }
+  }
+
+  void setupDestination(DragStartInfo details) {
+    if (!missileLaunched) {
+      isPressed = true;
+      tap.setPosition(
+          Vector2(details.eventPosition.game.x, details.eventPosition.game.y));
+      missile.setPosition(base.center());
+      missileDirection = (tap.position - missile.position).normalized();
+    }
+  }
+
+  void moveDestination(DragUpdateInfo details) {
+    if (!missileLaunched) {
+      isPressed = true;
+      tap.setPosition(
+          Vector2(details.eventPosition.game.x, details.eventPosition.game.y));
+      missile.setPosition(base.center());
+      missileDirection = (tap.position - missile.position).normalized();
+    }
+  }
+
+  void launchMissile(DragEndInfo details) {
+    if (!missileLaunched && tap.position.y < base.position.y) {
+      missileLaunched = true;
+      isPressed = true;
+    } else {
+      isPressed = false;
     }
   }
 
@@ -111,7 +107,6 @@ class MissileSystem extends BaseGame with PanDetector {
   }
 
   void update(double dt) {
-    super.update(dt);
     if (missileLaunched) {
       missile.update(dt);
       missile.position.add(missileDirection * missileSpeed * dt);
@@ -136,7 +131,6 @@ class MissileSystem extends BaseGame with PanDetector {
   }
 
   void render(Canvas canvas) {
-    super.render(canvas);
     base.render(canvas);
     if (missileLaunched) {
       missile.render(canvas);
