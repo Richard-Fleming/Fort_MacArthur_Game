@@ -35,11 +35,13 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   void update(double dt) {
     super.update(dt);
     healthbar.update(dt);
-    if (isPressed && ammoManager.ammo > 0) {
+
+    /* if (isPressed && ammoManager.ammo > 0) {
       print("Fired");
     } else if (ammoManager.ammo == 0) {
       print("Ammo empty");
-    }
+    }*/
+
     // put anything to be updated such here
   }
 
@@ -47,8 +49,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   void render(Canvas canvas) {
     super.render(canvas);
     ammoManager.draw(canvas);
-    // put anything to be drawn here
     healthbar.render(canvas);
+
+    // put anything to be drawn here
   }
 
   // changes the background color
