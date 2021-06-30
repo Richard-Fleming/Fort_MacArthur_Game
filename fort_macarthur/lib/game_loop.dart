@@ -15,9 +15,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   void onTapDown(TapDownInfo event) {
     isPressed = true;
-    if (ammoManager.ammo > 0) {
-      ammoManager.onTapDown(event);
-    }
+    ammoManager.onTapDown(event);
   }
 
   void onTapUp(TapUpInfo event) {
