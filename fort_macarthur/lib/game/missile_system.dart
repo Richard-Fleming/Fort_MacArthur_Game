@@ -16,6 +16,8 @@ class MissileSystem {
   late GameObjectRect base;
   late GameObjectRect missile;
   late GameObjectRect tap;
+
+  // allows for multiple explosions to go off at the same time
   List<Explosion> explosions = [];
 
   double missileSpeed = 300;
@@ -28,6 +30,7 @@ class MissileSystem {
 
   Paint whiteBox = new Paint()..color = Color(0xFFFFFFFF);
 
+  // initializing all of the game objects
   MissileSystem() {
     missile = new GameObjectRect(
         size: Vector2(30, 10),
@@ -45,6 +48,7 @@ class MissileSystem {
         position: Vector2.zero());
   }
 
+  // initializes game objects that need the screen size variable
   void baseInit(Vector2 displaySize) {
     base = new GameObjectRect(
       size: Vector2(50, 30),
@@ -55,18 +59,30 @@ class MissileSystem {
     lineStart = base.position + base.center();
   }
 
+  // launches missile on tap
   void launchMissileOnTap(TapDownInfo event) {
     if (!missileLaunched) {
       isPressed = true;
+
+      // checks if missile destination is not under the base
+      if (!missileLaunched && tap.position.y < base.position.y) {
+        missileLaunched = true;
+        isPressed = true;
+      } else {
+        isPressed = false;
+      }
       tap.setPosition(
           Vector2(event.eventPosition.game.x, event.eventPosition.game.y) -
               tap.center());
       missile.setPosition(base.position + base.center());
+
+      // missile direction calculations
       missileDirection = (tap.position - missile.position).normalized();
       missile.faceDirection(missileDirection);
     }
   }
 
+  // sets up initial missile destination and line
   void setupDestination(DragStartInfo details) {
     if (!missileLaunched) {
       isPressed = true;
@@ -74,11 +90,14 @@ class MissileSystem {
           Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
               tap.center());
       missile.setPosition(base.position + base.center());
+
+      // missile direction calculations
       missileDirection = (tap.position - missile.position).normalized();
       missile.faceDirection(missileDirection);
     }
   }
 
+  // updates the missile destination and line
   void moveDestination(DragUpdateInfo details) {
     if (!missileLaunched) {
       isPressed = true;
@@ -86,11 +105,14 @@ class MissileSystem {
           Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
               tap.center());
       missile.setPosition(base.position + base.center());
+
+      // missile direction calculations
       missileDirection = (tap.position - missile.position).normalized();
       missile.faceDirection(missileDirection);
     }
   }
 
+  // launches the missile
   void launchMissile(DragEndInfo details) {
     if (!missileLaunched && tap.position.y < base.position.y) {
       missileLaunched = true;
@@ -100,15 +122,18 @@ class MissileSystem {
     }
   }
 
+  // updates the missile and checks if any explosions should go off
   void update(double dt) {
     if (isPressed || missileLaunched) {
       tap.update(dt);
     }
 
+    // once the missile is launched
     if (missileLaunched) {
       missile.update(dt);
       missile.position.add(missileDirection * missileSpeed * dt);
 
+      // explosion happens when missile reaches it's destination
       if (missile.position.y < tap.position.y) {
         explosions.add(Explosion(position: missile.position));
         missile.setPosition(base.position + base.center());
@@ -117,6 +142,7 @@ class MissileSystem {
       }
     }
 
+    // update each active explosion and kill finished explosions
     for (int i = explosions.length - 1; i >= 0; --i) {
       explosions.elementAt(i).update(dt);
       if (!explosions.elementAt(i).alive) {
@@ -125,6 +151,7 @@ class MissileSystem {
     }
   }
 
+  // render objects to the screen when certain conditions are met
   void render(Canvas canvas) {
     base.render(canvas);
     if (missileLaunched) {

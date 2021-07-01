@@ -11,6 +11,7 @@ class GameObjectRect {
   Vector2 size;
   double angle;
 
+  // generic rectangle shape object. can be rotated, resized, and moved.
   GameObjectRect(
       {required this.size,
       required Color color,
@@ -29,24 +30,35 @@ class GameObjectRect {
     this.angle = angle;
   }
 
+  void setSize(Vector2 size) {
+    this.size = size;
+  }
+
+  // calculates angle to face the direction passed.
+  // far from perfect
   void faceDirection(Vector2 direction) {
     this.angle = atan2(direction.y, direction.x);
   }
 
+  // returns center of the rectangle
   Vector2 center() {
     return Vector2(size.x / 2, size.y / 2);
   }
 
+  // updates the shape's properties
   void update(double dt) {
     collider.offsetPosition = this.position;
     collider.angle = this.angle;
+    collider.size = this.size;
   }
 
+  // render the shape
   void render(Canvas canvas) {
     collider.render(canvas, paint);
   }
 }
 
+// generic circle shape object. mainly used for the explosions
 class GameObjectCircle {
   late Circle collider;
   late Paint paint;
@@ -69,18 +81,22 @@ class GameObjectCircle {
     collider = new Circle(position: this.position, radius: radius);
   }
 
+  // returns the center
   Vector2 center() {
     return Vector2(collider.radius, collider.radius);
   }
 
+  // updates the cirlce shape
   void update(double dt) {
     collider = new Circle(position: position, radius: radius);
   }
 
+  // update the radius size
   void updateRadius(double increase, double dt) {
     this.radius += increase * dt;
   }
 
+  // draw the shape
   void render(Canvas canvas) {
     canvas.drawCircle(collider.position.toOffset(), radius, paint);
   }
