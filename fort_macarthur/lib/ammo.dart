@@ -15,7 +15,7 @@ class AmmunitionManager {
   ));
 
   void onTapDown(TapDownInfo event) {
-    print("Player tap down on ${event.eventPosition.game}");
+    //print("Player tap down on ${event.eventPosition.game}");
     decreaseAmmo(1);
     //fulfilledincreaseAmmo(1);
   }
