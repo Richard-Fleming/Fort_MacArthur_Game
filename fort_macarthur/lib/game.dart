@@ -1,6 +1,8 @@
 import 'package:flame/game.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/game_loop.dart';
+import 'package:flutter/widgets.dart';
+import 'package:fort_macarthur/Game/GameScreens/ScreenManager.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class GamePage extends StatelessWidget {
           title: Text("Game"),
         ),
         body: GameWidget(
-          game: GameLoop(),
+          game: ScreenManager.Widget,
         ));
   }
 }

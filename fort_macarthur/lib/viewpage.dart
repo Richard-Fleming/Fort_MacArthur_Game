@@ -5,7 +5,6 @@ import 'homepage.dart';
 import 'testpage.dart';
 import 'filmLocation.dart';
 import 'customDrawer.dart';
-import 'GameScreens/mainMenu.dart';
 import 'aboutus.dart';
 import 'package:fort_macarthur/virtual_tours.dart';
 import 'package:fort_macarthur/projects.dart';
@@ -34,7 +33,6 @@ class _ViewPageState extends State<Viewpage> {
     VirtualTours(),
     FilmLocation(),
     ProjectsPage(),
-    MainMenu(),
     EducationPage(),
     PostHistoryPage(),
     AboutUsPage(),

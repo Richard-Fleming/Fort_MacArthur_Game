@@ -76,20 +76,14 @@ class CustomDrawer extends StatelessWidget {
           ),
 
           CustomListTiles(
-            Icons.games,
-            'Play Game',
-            () => action(context, 5),
-          ),
-
-          CustomListTiles(
             Icons.cast_for_education,
             'Get Educated',
-            () => action(context, 6),
+            () => action(context, 5),
           ),
           CustomListTiles(Icons.manage_search_rounded, 'Post History',
-              () => action(context, 7)),
+              () => action(context, 6)),
           CustomListTiles(
-              Icons.bookmarks, 'About us', () => action(context, 8)),
+              Icons.bookmarks, 'About us', () => action(context, 7)),
         ],
       ),
     );
