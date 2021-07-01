@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
 import 'healthbar.dart';
+import 'game/enemyplane.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
@@ -13,11 +14,13 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   var ammoManager = new AmmunitionManager();
   Future<void> onLoad() async {
     // put image loading, class initialization here
+    add(new EnemyPlane());
   }
 
   void onTapDown(TapDownInfo event) {
     isPressed = true;
     healthbar.setFade(isPressed);
+    healthbar.manageHealth(-1);
     ammoManager.onTapDown(event);
   }
 
