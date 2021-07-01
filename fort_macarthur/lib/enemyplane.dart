@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'knows_game_size.dart';
+import 'game/knows_game_size.dart';
 
 class EnemyPlane extends PositionComponent with KnowsGameSize {
   final double offset = 40.0;
