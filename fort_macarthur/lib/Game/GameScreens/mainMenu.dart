@@ -1,18 +1,16 @@
 import 'dart:ui';
-
+import 'package:flame/components.dart';
+import 'package:flame/game.dart';
+import 'package:fort_macarthur/Game/Components/start_button.dart';
+import 'package:flame/sprite.dart';
 import 'package:fort_macarthur/Game/game_loop.dart';
-import 'package:fort_macarthur/GameScreens/ScreenState.dart';
-import 'package:flutter/src/gestures/tap.dart';
 
 class MainMenu extends GameLoop {
-  MainMenu() {}
+  late final Game game;
+  late Rect startRect;
+  late Sprite startSprite;
 
-  @override
-  void render(Canvas canvas);
+  void render(Canvas c) {}
 
-  @override
-  void update(double t);
-
-  @override
-  void onTapDown(TapDownDetails detail, Function fn);
+  void update(double t) {}
 }

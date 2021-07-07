@@ -1,5 +1,4 @@
 enum ScreenState {
-  fMenuScreen,
-  fPlayScreen,
-  fOptionsScreen,
+  menu,
+  gamePlay,
 }
