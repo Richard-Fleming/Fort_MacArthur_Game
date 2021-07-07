@@ -31,7 +31,7 @@ class EnemyPlane extends PositionComponent {
 
 // TODO: Adjust this value later, as it is only used for debugging purposes
     if (timeToRespawn <= 0)
-      body = body.translate(0, 3);
+      body = body.translate(0.0, 2.0);
     else
       timeToRespawn -= dt;
 
@@ -54,6 +54,7 @@ class EnemyPlane extends PositionComponent {
     body = Rect.fromLTWH(
         startpoints[pos].x, startpoints[pos].y, bodySize, bodySize);
 
-    timeToRespawn = Random().nextDouble();
+    var random = new Random();
+    timeToRespawn = random.nextDouble() * 3.0;
   }
 }
