@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:fort_macarthur/healthbar.dart';
+import 'healthbar.dart';
 
 class EnemyPlane extends PositionComponent {
   // size of hitbox
