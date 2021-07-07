@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:fort_macarthur/game/explosion.dart';
+import 'package:fort_macarthur/game/missile.dart';
 
 import 'game_object.dart';
 
@@ -11,10 +12,10 @@ import 'game_object.dart';
 class MissileSystem {
   Vector2 touchPosition = Vector2.zero();
   Vector2 lineStart = Vector2.zero();
-  Vector2 missileDirection = Vector2.zero();
+  // Vector2 missileDirection = Vector2.zero();
 
   late GameObjectRect base;
-  late GameObjectRect missile;
+  late Missile missile;
   late GameObjectRect tap;
 
   // allows for multiple explosions to go off at the same time
@@ -32,7 +33,7 @@ class MissileSystem {
 
   // initializing all of the game objects
   MissileSystem() {
-    missile = new GameObjectRect(
+    missile = new Missile(
         size: Vector2(30, 10),
         color: Color(0xFFFFFFFF),
         position: Vector2.zero());
@@ -64,21 +65,22 @@ class MissileSystem {
     if (!missileLaunched) {
       isPressed = true;
 
-      // checks if missile destination is not under the base
-      if (!missileLaunched && tap.position.y < base.position.y) {
-        missileLaunched = true;
-        isPressed = true;
-      } else {
-        isPressed = false;
-      }
       tap.setPosition(
           Vector2(event.eventPosition.game.x, event.eventPosition.game.y) -
               tap.center());
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missileDirection = (tap.position - missile.position).normalized();
-      missile.faceDirection(missileDirection);
+      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.faceDirection(missile.missileDirection);
+
+      // checks if missile destination is not under the base
+      if (tap.position.y < base.position.y) {
+        missileLaunched = true;
+        isPressed = true;
+      } else {
+        isPressed = false;
+      }
     }
   }
 
@@ -92,8 +94,8 @@ class MissileSystem {
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missileDirection = (tap.position - missile.position).normalized();
-      missile.faceDirection(missileDirection);
+      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.faceDirection(missile.missileDirection);
     }
   }
 
@@ -107,14 +109,14 @@ class MissileSystem {
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missileDirection = (tap.position - missile.position).normalized();
-      missile.faceDirection(missileDirection);
+      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.faceDirection(missile.missileDirection);
     }
   }
 
   // launches the missile
   void launchMissile(DragEndInfo details) {
-    if (!missileLaunched && tap.position.y < base.position.y) {
+    if (isPressed && !missileLaunched && tap.position.y < base.position.y) {
       missileLaunched = true;
       isPressed = true;
     } else {
@@ -131,7 +133,6 @@ class MissileSystem {
     // once the missile is launched
     if (missileLaunched) {
       missile.update(dt);
-      missile.position.add(missileDirection * missileSpeed * dt);
 
       // explosion happens when missile reaches it's destination
       if (missile.position.y < tap.position.y) {
