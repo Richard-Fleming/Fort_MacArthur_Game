@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:flame/components.dart';
 
 import 'ammo.dart';
 import 'package:flame/game.dart';
@@ -17,14 +16,15 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   Future<void> onLoad() async {
     // put image loading, class initialization here
     add(healthbar);
-    add(EnemyPlane(size));
-    add(EnemyPlane(size));
+
+    for (int i = 0; i < 3; i++) {
+      add(EnemyPlane(size, healthbar));
+    }
   }
 
   void onTapDown(TapDownInfo event) {
     isPressed = true;
     healthbar.setFade(isPressed);
-    healthbar.manageHealth(-1);
     ammoManager.onTapDown(event);
   }
 
@@ -42,12 +42,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   void update(double dt) {
     super.update(dt);
     healthbar.update(dt);
-
-    /* if (isPressed && ammoManager.ammo > 0) {
-      print("Fired");
-    } else if (ammoManager.ammo == 0) {
-      print("Ammo empty");
-    }*/
 
     // put anything to be updated such here
   }
