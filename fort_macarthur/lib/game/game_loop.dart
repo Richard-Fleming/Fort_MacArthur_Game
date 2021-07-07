@@ -6,9 +6,6 @@ import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
 import 'healthbar.dart';
 import 'enemyplane.dart';
-import 'package:flame/game.dart';
-import 'package:flame/gestures.dart';
-import 'package:flutter/cupertino.dart';
 import 'missile_system.dart';
 
 // main game loop. pan detector necessary for touch detection
