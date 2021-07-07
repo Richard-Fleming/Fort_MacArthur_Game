@@ -1,6 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'game_loop.dart';
+import 'package:fort_macarthur/game/game_loop.dart';
 
 void main() {
   runApp(MaterialApp(
