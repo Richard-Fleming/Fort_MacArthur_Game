@@ -2,9 +2,8 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'game/knows_game_size.dart';
 
-class EnemyPlane extends PositionComponent with KnowsGameSize {
+class EnemyPlane extends PositionComponent {
   final double offset = 40.0;
 
   final List<Vector2> startpoints = [];
@@ -13,12 +12,12 @@ class EnemyPlane extends PositionComponent with KnowsGameSize {
 
   var body = new Rect.fromLTWH(0, 0, 25, 25);
 
-  EnemyPlane() {
+  EnemyPlane(Vector2 screenSize) {
     startpoints.add(Vector2(offset, -60.0)); // left starting point
+    startpoints.add(Vector2(
+        (screenSize.x / 2.0) - (offset / 2), -60.0)); // middle starting point
     startpoints.add(
-        Vector2(gameSize.x - (offset / 2), -60.0)); // middle starting point
-    startpoints
-        .add(Vector2(400 - (offset / 2), -60.0)); // right starting point)
+        Vector2(screenSize.x - (offset / 2), -60.0)); // right starting point)
 
     resetPlane();
   }

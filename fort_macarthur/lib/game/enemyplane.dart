@@ -2,24 +2,26 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'knows_game_size.dart';
 
-class EnemyPlane extends PositionComponent with KnowsGameSize {
-  final double offset = 40.0;
+class EnemyPlane extends PositionComponent {
+  final double bodySize = 40.0;
 
   final List<Vector2> startpoints = [];
 
   final int startingpoint = 0;
 
+  final Vector2 screenSize;
+
+  double timeToRespawn = 0;
+
   var body = new Rect.fromLTWH(0, 0, 25, 25);
 
-  EnemyPlane() {
-    startpoints.add(Vector2(offset, -60.0)); // left starting point
+  EnemyPlane(this.screenSize) {
+    startpoints.add(Vector2(bodySize, -60.0)); // left starting point
+    startpoints.add(Vector2(
+        (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
     startpoints.add(
-        Vector2(gameSize.x - (offset / 2), -60.0)); // middle starting point
-    startpoints
-        .add(Vector2(400 - (offset / 2), -60.0)); // right starting point)
-
+        Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
     resetPlane();
   }
 
@@ -28,9 +30,12 @@ class EnemyPlane extends PositionComponent with KnowsGameSize {
     super.update(dt);
 
 // TODO: Adjust this value later, as it is only used for debugging purposes
-    body = body.translate(0, 3);
+    if (timeToRespawn <= 0)
+      body = body.translate(0, 3);
+    else
+      timeToRespawn -= dt;
 
-    if (body.top > 625) {
+    if (body.top > screenSize.y + bodySize) {
       resetPlane();
     }
   }
@@ -46,9 +51,9 @@ class EnemyPlane extends PositionComponent with KnowsGameSize {
     // generates num between 1 and 3
     // minus 1 as arrays start at 0, so we get a range of 0 to 2.
     int pos = Random().nextInt(startpoints.length);
+    body = Rect.fromLTWH(
+        startpoints[pos].x, startpoints[pos].y, bodySize, bodySize);
 
-    print(pos); // FIXME: Remove this print!
-
-    body = Rect.fromLTWH(startpoints[pos].x, startpoints[pos].y, 40, 40);
+    timeToRespawn = Random().nextDouble();
   }
 }

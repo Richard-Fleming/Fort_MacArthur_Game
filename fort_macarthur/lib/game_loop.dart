@@ -7,7 +7,6 @@ import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
 import 'healthbar.dart';
 import 'game/enemyplane.dart';
-import 'game/knows_game_size.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
@@ -15,13 +14,11 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   bool isPressed = false;
   var healthbar = new HealthBar(100, 100);
   var ammoManager = new AmmunitionManager();
-  late EnemyPlane enemy;
   Future<void> onLoad() async {
     // put image loading, class initialization here
     add(healthbar);
-
-    enemy = EnemyPlane();
-    add(enemy);
+    add(EnemyPlane(size));
+    add(EnemyPlane(size));
   }
 
   void onTapDown(TapDownInfo event) {
@@ -62,22 +59,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     healthbar.render(canvas);
 
     // put anything to be drawn here
-  }
-
-  @override
-  void prepare(Component c) {
-    super.prepare(c);
-
-    if (c is KnowsGameSize) c.onResize(this.size);
-  }
-
-  @override
-  void onResize(Vector2 canvasSize) {
-    super.onResize(canvasSize);
-
-    this.components.whereType<KnowsGameSize>().forEach((component) {
-      component.onResize(this.size);
-    });
   }
 
   // changes the background color
