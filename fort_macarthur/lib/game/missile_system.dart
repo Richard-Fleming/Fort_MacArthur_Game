@@ -73,14 +73,6 @@ class MissileSystem {
       // missile direction calculations
       missile.missileDirection = (tap.position - missile.position).normalized();
       missile.faceDirection(missile.missileDirection);
-
-      // checks if missile destination is not under the base
-      if (tap.position.y < base.position.y) {
-        missileLaunched = true;
-        isPressed = true;
-      } else {
-        isPressed = false;
-      }
     }
   }
 
@@ -115,7 +107,8 @@ class MissileSystem {
   }
 
   // launches the missile
-  void launchMissile(DragEndInfo details) {
+  void launchMissile() {
+    // checks if missile destination is not under the base
     if (isPressed && !missileLaunched && tap.position.y < base.position.y) {
       missileLaunched = true;
       isPressed = true;

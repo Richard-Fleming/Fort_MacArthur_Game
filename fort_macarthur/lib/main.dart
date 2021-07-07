@@ -1,42 +1,22 @@
-// @dart=2.9
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'viewpage.dart';
-import 'package:fort_macarthur/device.dart';
-import 'device.dart';
+import 'package:fort_macarthur/game/game_loop.dart';
 
-void main() => runApp(MaterialApp(
-      home: _SplashScreen(),
-      debugShowCheckedModeBanner: false,
-    ));
-
-class _SplashScreen extends StatefulWidget {
-  @override
-  _SplashState createState() => _SplashState();
+void main() {
+  runApp(MaterialApp(
+    home: GameView(),
+  ));
 }
 
-class _SplashState extends State<_SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(
-      Duration(seconds: 3),
-      () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Viewpage()),
-        );
-      },
-    );
-  }
-
+class GameView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Device.init();
     return Scaffold(
-      backgroundColor: Device.backroundCOLOR,
-      body: Center(
-        child: Image.asset('assets/logo/logo.png'),
+      appBar: AppBar(
+        title: Text("Game"),
+      ),
+      body: GameWidget(
+        game: GameLoop(),
       ),
     );
   }
