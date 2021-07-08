@@ -1,10 +1,11 @@
 import 'dart:ui';
 
+import 'ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fort_macarthur/ammo.dart';
-import 'package:fort_macarthur/healthbar.dart';
+import 'healthbar.dart';
+import 'enemyplane.dart';
 import 'missile_system.dart';
 
 // main game loop. pan detector necessary for touch detection
@@ -17,6 +18,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
+    // put image loading, class initialization here
+    add(healthbar);
+
+    for (int i = 0; i < 3; i++) {
+      add(EnemyPlane(size, healthbar));
+    }
     missileSystem.baseInit(size);
   }
 
@@ -62,11 +69,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.update(dt);
     healthbar.update(dt);
 
-    /* if (isPressed && ammoManager.ammo > 0) {
-      print("Fired");
-    } else if (ammoManager.ammo == 0) {
-      print("Ammo empty");
-    }*/
+    // put anything to be updated such here
   }
 
   // renders objects to the canvas
