@@ -1,12 +1,16 @@
 import 'dart:ui';
 
+import 'package:flutter/services.dart';
+
 import 'ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
+import 'GameScreens/screenState.dart';
 import 'healthbar.dart';
 import 'enemyplane.dart';
 import 'missile_system.dart';
+import 'buttons.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
@@ -15,6 +19,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   bool isPressed = false;
   var healthbar = new HealthBar(100, 100);
   var ammoManager = new AmmunitionManager();
+  var startButton = new Button(120, 110, 160, 60, 200, 110, 'START');
+  var optionButton = new Button(90, 250, 220, 60, 200, 250, 'OPTIONS');
+  var quitButton = new Button(120, 390, 160, 60, 200, 390, 'QUIT');
+  var backButton = new Button(120, 390, 160, 60, 200, 390, 'BACK');
+
+  Screens _currentScreen = Screens.menu;
 
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
@@ -30,54 +40,127 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   // touch start
   void onTapDown(TapDownInfo event) {
     isPressed = true;
-    healthbar.setFade(isPressed);
-    ammoManager.onTapDown(event);
-    missileSystem.launchMissileOnTap(event);
+
+    switch (_currentScreen) {
+      case Screens.menu:
+        {
+          startButton.onTapDown(event);
+          optionButton.onTapDown(event);
+          quitButton.onTapDown(event);
+        }
+        break;
+      case Screens.gamePlay:
+        {
+          healthbar.setFade(isPressed);
+          ammoManager.onTapDown(event);
+          missileSystem.launchMissileOnTap(event);
+        }
+        break;
+      case Screens.options:
+        {
+          backButton.onTapDown(event);
+        }
+        break;
+      case Screens.endGame:
+        {}
+    }
   }
 
   // touch end
   void onTapUp(TapUpInfo event) {
     isPressed = false;
-    healthbar.setFade(isPressed);
-    missileSystem.launchMissile();
+    if (_currentScreen == Screens.gamePlay) {
+      healthbar.setFade(isPressed);
+      missileSystem.launchMissile();
+    }
   }
 
   // touch cancelled
   void onTapCancel() {
     isPressed = false;
-    healthbar.setFade(isPressed);
+    if (_currentScreen == Screens.gamePlay) {
+      healthbar.setFade(isPressed);
+    }
   }
 
   // drag motion started
   void onPanStart(DragStartInfo details) {
-    missileSystem.setupDestination(details);
+    if (_currentScreen == Screens.gamePlay) {
+      missileSystem.setupDestination(details);
+    }
   }
 
   // continued touch dragging movement
   void onPanUpdate(DragUpdateInfo details) {
-    missileSystem.moveDestination(details);
+    if (_currentScreen == Screens.gamePlay) {
+      missileSystem.moveDestination(details);
+    }
   }
 
   // when the touch ends
   void onPanEnd(DragEndInfo details) {
-    missileSystem.launchMissile();
+    if (_currentScreen == Screens.gamePlay) {
+      missileSystem.launchMissile();
+    }
   }
 
   // updates game
   void update(double dt) {
     super.update(dt);
-    missileSystem.update(dt);
-    healthbar.update(dt);
 
-    // put anything to be updated such here
+    switch (_currentScreen) {
+      case Screens.menu:
+        {
+          if (isPressed == true && startButton.wasPressed() == true) {
+            _currentScreen = Screens.gamePlay;
+          } else if (isPressed == true && optionButton.wasPressed() == true) {
+            _currentScreen = Screens.options;
+          } else if (isPressed == true && quitButton.wasPressed() == true) {
+            _currentScreen = Screens.endGame;
+            print("Screens = " + _currentScreen.toString());
+          }
+        }
+        break;
+      case Screens.gamePlay:
+        {
+          missileSystem.update(dt);
+          healthbar.update(dt);
+
+          if (healthbar.dead == true) {
+            _currentScreen = Screens.menu;
+            healthbar.dead = false;
+            print("We dead");
+          }
+        }
+        break;
+      case Screens.options:
+        {
+          if (isPressed == true && backButton.wasPressed() == true) {
+            _currentScreen = Screens.menu;
+          }
+        }
+        break;
+      case Screens.endGame:
+        {}
+        break;
+    }
   }
+  // put anything to be updated such here
 
   // renders objects to the canvas
   void render(Canvas canvas) {
     super.render(canvas);
-    missileSystem.render(canvas);
-    ammoManager.draw(canvas);
-    healthbar.render(canvas);
+    if (_currentScreen == Screens.menu) {
+      startButton.render(canvas);
+      optionButton.render(canvas);
+      quitButton.render(canvas);
+    } else if (_currentScreen == Screens.gamePlay) {
+      missileSystem.render(canvas);
+      ammoManager.draw(canvas);
+      healthbar.render(canvas);
+    } else if (_currentScreen == Screens.options) {
+      backButton.render(canvas);
+    }
   }
 
   // changes the background color
