@@ -4,6 +4,7 @@ import 'ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flame/components.dart'; // Needed for Anchor class
 import 'healthbar.dart';
 import 'enemyplane.dart';
 import 'missile_system.dart';
@@ -12,11 +13,17 @@ import 'missile_system.dart';
 class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
 
-  static const int NUM_OF_ENEMIES = 3;
+  int enemyCount = 3;
 
   bool isPressed = false;
   late HealthBar healthbar;
   var ammoManager = new AmmunitionManager();
+
+  TextPaint textPaint = TextPaint(
+      config: TextPaintConfig(
+    fontSize: 20.0,
+    fontFamily: 'Awesome Font',
+  ));
 
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
@@ -24,7 +31,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     healthbar = HealthBar(size.x / 1.5, size.y - 50);
     add(healthbar);
 
-    for (var i = 0; i < NUM_OF_ENEMIES; i++) {
+    for (var i = 0; i < enemyCount; i++) {
       add(EnemyPlane(size, healthbar));
     }
     missileSystem.baseInit(size);
@@ -81,6 +88,11 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.render(canvas);
     ammoManager.draw(canvas);
     healthbar.render(canvas);
+
+    //TODO: Remove this when proper Enemy Manager is implemented.
+    textPaint.render(
+        canvas, enemyCount.toString() + ' Enemies Remain', Vector2(95, 10),
+        anchor: Anchor.topCenter);
   }
 
   // changes the background color
