@@ -12,16 +12,19 @@ import 'missile_system.dart';
 class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
 
+  static const int NUM_OF_ENEMIES = 3;
+
   bool isPressed = false;
-  var healthbar = new HealthBar(100, 100);
+  late HealthBar healthbar;
   var ammoManager = new AmmunitionManager();
 
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
     // put image loading, class initialization here
+    healthbar = HealthBar(size.x / 1.5, size.y - 50);
     add(healthbar);
 
-    for (int i = 0; i < 3; i++) {
+    for (var i = 0; i < NUM_OF_ENEMIES; i++) {
       add(EnemyPlane(size, healthbar));
     }
     missileSystem.baseInit(size);
