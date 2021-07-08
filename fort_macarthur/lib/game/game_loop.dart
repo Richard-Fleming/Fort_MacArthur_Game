@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter/services.dart';
-
 import 'ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
@@ -15,6 +13,7 @@ import 'buttons.dart';
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
+  Screens _currentScreen = Screens.menu;
 
   bool isPressed = false;
   var healthbar = new HealthBar(100, 100);
@@ -23,8 +22,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   var optionButton = new Button(90, 250, 220, 60, 200, 250, 'OPTIONS');
   var quitButton = new Button(120, 390, 160, 60, 200, 390, 'QUIT');
   var backButton = new Button(120, 390, 160, 60, 200, 390, 'BACK');
-
-  Screens _currentScreen = Screens.menu;
 
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
@@ -44,9 +41,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     switch (_currentScreen) {
       case Screens.menu:
         {
-          startButton.onTapDown(event);
-          optionButton.onTapDown(event);
-          quitButton.onTapDown(event);
+          startButton.onTapDown(isPressed);
+          optionButton.onTapDown(isPressed);
+          quitButton.onTapDown(isPressed);
         }
         break;
       case Screens.gamePlay:
@@ -58,7 +55,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
         break;
       case Screens.options:
         {
-          backButton.onTapDown(event);
+          backButton.onTapDown(isPressed);
         }
         break;
       case Screens.endGame:

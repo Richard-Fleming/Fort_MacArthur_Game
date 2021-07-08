@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
+import 'GameScreens/screenState.dart';
 
 class Button extends PositionComponent {
   TextPaint textPaint = TextPaint(
@@ -12,6 +13,7 @@ class Button extends PositionComponent {
     fontFamily: 'Awesome Font',
   ));
   bool isPressed = false;
+  bool active = false;
   final double left;
   final double top;
   final double width;
@@ -30,10 +32,16 @@ class Button extends PositionComponent {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (wasPressed()) {
+      active = true;
+    } else {
+      active = false;
+    }
   }
 
-  void onTapDown(TapDownInfo event) {
-    isPressed = true;
+  void onTapDown(bool pressed) {
+    isPressed = pressed;
   }
 
   void applyPaint() {
