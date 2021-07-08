@@ -22,7 +22,6 @@ class _ViewPageState extends State<Viewpage> {
     "Virtual Tours",
     "Film Location",
     "Projects",
-    "Play Game",
     "Get Educated",
     "Post History",
     "About Us",

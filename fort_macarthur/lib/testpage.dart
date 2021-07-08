@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/game.dart';
+import 'package:fort_macarthur/Game/game.dart';
 import 'device.dart';
 
 class TestPage extends StatefulWidget {

@@ -1,39 +1,75 @@
 import 'dart:ui';
+import 'package:flutter/material.dart';
 
+import 'GameScreens/screenState.dart';
+import '../ammo.dart';
+import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fort_macarthur/Game/GameScreens/screens.dart';
-
-import 'package:fort_macarthur/Game/GameScreens/mainMenu.dart';
+import 'healthbar.dart';
 
 // main game loop. pan detector necessary for touch detection
-abstract class GameLoop {
-  Screen activeScreen = Screen.mainMenu;
-  late MainMenu mainMenu;
-
+class GameLoop extends BaseGame with PanDetector, TapDetector {
   // function for loading in assets and initializing classes
+  bool isPressed = false;
+  var healthbar = new HealthBar(100, 100);
+  var ammoManager = new AmmunitionManager();
+  Screens _currentScreen = Screens.gamePlay;
+  /* var startbar = new  */
+
   Future<void> onLoad() async {
-    mainMenu = MainMenu();
+    print('Loading Assets');
+    // TODO sort out these pathing issues with sprites
   }
 
-  // touch start
-  void onTapDown(TapDownInfo event) {}
+  void onTapDown(TapDownInfo event) {
+    isPressed = true;
+    if (_currentScreen == Screens.menu) {
+    } else if (_currentScreen == Screens.gamePlay) {
+      healthbar.setFade(isPressed);
+      ammoManager.onTapDown(event);
+    }
+  }
 
-  // drag motion started
-  void onPanStart(DragStartInfo details) {}
+  void onTapUp(TapUpInfo event) {
+    isPressed = false;
+    if (_currentScreen == Screens.gamePlay) {
+      healthbar.setFade(isPressed);
+    }
+  }
 
-  // continued touch dragging movement
-  void onPanUpdate(DragUpdateInfo details) {}
-
-  // when the touch ends
-  void onPanEnd(DragEndInfo details) {}
+  void onTapCancel() {
+    isPressed = false;
+    if (_currentScreen == Screens.gamePlay) {
+      healthbar.setFade(isPressed);
+    }
+  }
 
   // updates game
-  void update(double dt) {}
+  void update(double dt) {
+    super.update(dt);
+
+    print('Current Screen' + _currentScreen.toString());
+    if (_currentScreen == Screens.gamePlay) {
+      healthbar.update(dt);
+    }
+
+    // put anything to be updated such here
+  }
 
   // renders objects to the canvas
-  void render(Canvas canvas) {}
+  void render(Canvas canvas) {
+    super.render(canvas);
+    if (_currentScreen == Screens.menu) {
+    } else if (_currentScreen == Screens.gamePlay) {
+      ammoManager.draw(canvas);
+      healthbar.render(canvas);
+    }
+
+    // put anything to be drawn here
+  }
 
   // changes the background color
-  Color backgroundColor() => const Color(0xFF666666);
+  Color backgroundColor() =>
+      const Color(0xFF666666); // change this to RGB if you want
 }

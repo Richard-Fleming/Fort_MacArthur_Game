@@ -1,4 +1,6 @@
-enum ScreenState {
+enum Screens {
   menu,
   gamePlay,
+  options,
+  endGame,
 }
