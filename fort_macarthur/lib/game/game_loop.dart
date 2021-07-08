@@ -25,6 +25,8 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     fontFamily: 'Awesome Font',
   ));
 
+  bool paused = false;
+
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
     // put image loading, class initialization here
@@ -39,45 +41,62 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   // touch start
   void onTapDown(TapDownInfo event) {
-    isPressed = true;
-    healthbar.setFade(isPressed);
-    ammoManager.onTapDown(event);
-    missileSystem.launchMissileOnTap(event);
+    if (event.eventPosition.game.x < 400 && event.eventPosition.game.y < 75) {
+      // if they tap the top right of the screen,
+      // pause the game
+      paused = !paused;
+    }
+
+    if (!paused) {
+      isPressed = true;
+      healthbar.setFade(isPressed);
+      ammoManager.onTapDown(event);
+      missileSystem.launchMissileOnTap(event);
+    }
   }
 
   // touch end
   void onTapUp(TapUpInfo event) {
-    isPressed = false;
-    healthbar.setFade(isPressed);
-    missileSystem.launchMissile();
+    if (!paused) {
+      isPressed = false;
+      healthbar.setFade(isPressed);
+      missileSystem.launchMissile();
+    }
+
+    if (event.eventPosition.game.x < 400 && event.eventPosition.game.y > 75)
+      paused = false;
   }
 
   // touch cancelled
   void onTapCancel() {
-    isPressed = false;
-    healthbar.setFade(isPressed);
+    if (!paused) {
+      isPressed = false;
+      healthbar.setFade(isPressed);
+    }
   }
 
   // drag motion started
   void onPanStart(DragStartInfo details) {
-    missileSystem.setupDestination(details);
+    if (!paused) missileSystem.setupDestination(details);
   }
 
   // continued touch dragging movement
   void onPanUpdate(DragUpdateInfo details) {
-    missileSystem.moveDestination(details);
+    if (!paused) missileSystem.moveDestination(details);
   }
 
   // when the touch ends
   void onPanEnd(DragEndInfo details) {
-    missileSystem.launchMissile();
+    if (!paused) missileSystem.launchMissile();
   }
 
   // updates game
   void update(double dt) {
-    super.update(dt);
-    missileSystem.update(dt);
-    healthbar.update(dt);
+    if (!paused) {
+      super.update(dt);
+      missileSystem.update(dt);
+      healthbar.update(dt);
+    }
 
     // put anything to be updated such here
   }
@@ -90,8 +109,16 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     healthbar.render(canvas);
 
     //TODO: Remove this when proper Enemy Manager is implemented.
-    textPaint.render(
-        canvas, enemyCount.toString() + ' Enemies Remain', Vector2(95, 10),
+    if (!paused) {
+      textPaint.render(
+          canvas, enemyCount.toString() + ' Enemies Remain', Vector2(95, 10),
+          anchor: Anchor.topCenter);
+    } else {
+      textPaint.render(canvas, 'Paused...', Vector2(95, 10),
+          anchor: Anchor.topCenter);
+    }
+
+    textPaint.render(canvas, "Pause", Vector2(375, 10),
         anchor: Anchor.topCenter);
   }
 
