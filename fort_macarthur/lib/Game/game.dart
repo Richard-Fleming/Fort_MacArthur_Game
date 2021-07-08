@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/game_loop.dart';
 
+
 class GamePage extends StatelessWidget {
   const GamePage({Key? key}) : super(key: key);
 
