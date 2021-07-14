@@ -74,7 +74,6 @@ class HealthBar extends PositionComponent {
       currentFade += fadeRate;
       if (currentFade > MAX_OPAQUE) currentFade = MAX_OPAQUE;
 
-      print(currentFade);
       applyPaint();
     }
   }
@@ -84,7 +83,6 @@ class HealthBar extends PositionComponent {
       currentFade -= fadeRate;
       if (currentFade < 0) currentFade = 0;
 
-      print(currentFade);
       applyPaint();
     }
   }

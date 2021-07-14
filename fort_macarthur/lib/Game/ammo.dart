@@ -33,7 +33,7 @@ class AmmunitionManager {
   }
 
   draw(Canvas canvas) {
-    textPaint.render(canvas, ammo.toString() + '/20', Vector2(200, 10),
+    textPaint.render(canvas, ammo.toString() + '/20', Vector2(300, 500),
         anchor: Anchor.topCenter);
   }
 
