@@ -24,7 +24,7 @@ class Missile extends GameObjectRect {
         );
 
   void setPosition(Vector2 position) {
-    super.setPosition(position);
+    super.setPosition(position - (size / 2.0));
   }
 
   Vector2 get position {

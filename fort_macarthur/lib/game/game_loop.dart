@@ -13,7 +13,7 @@ import 'missile_system.dart';
 class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
 
-  int enemyCount = 3;
+  int enemyCount = 0;
 
   bool isPressed = false;
   late HealthBar healthbar;
@@ -110,8 +110,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
     //TODO: Remove this when proper Enemy Manager is implemented.
     if (!paused) {
-      textPaint.render(
-          canvas, enemyCount.toString() + ' Enemies Remain', Vector2(95, 10),
+      textPaint.render(canvas, 'Enemies Disabled', Vector2(95, 10),
           anchor: Anchor.topCenter);
     } else {
       textPaint.render(canvas, 'Paused...', Vector2(95, 10),
