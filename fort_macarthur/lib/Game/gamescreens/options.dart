@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../device.dart';
 
 import 'mainmenu.dart';
 
@@ -22,13 +23,17 @@ class Options extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 50.0,
                   color: Colors.black,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 20.0,
-                      color: Colors.white,
-                      offset: Offset(0, 0),
-                    )
-                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 50.0, horizontal: 25),
+              child: Text(
+                'Implement once we have audio or similiar dynamic properties',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.black,
                 ),
               ),
             ),

@@ -24,13 +24,6 @@ class MainMenu extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 50.0,
                   color: Colors.black,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 20.0,
-                      color: Colors.white,
-                      offset: Offset(0, 0),
-                    )
-                  ],
                 ),
               ),
             ),

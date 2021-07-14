@@ -23,9 +23,13 @@ class Device {
   static Device? _device; // ? denotes that the type can be null
   static Function? onMetricsChange;
 
-  static double _safeAreaHorizontal = 0.0; // space without headers/footer
-  static double _safeAreaVertical = 0.0; // ^^ i.e. our positional space
-  static double safeBlockHorizontal = 0.0; // Our positions in that space
+  // space without headers/footer
+  // ^^ i.e. our entire positional space
+  static double _safeAreaHorizontal = 0.0;
+  static double _safeAreaVertical = 0.0;
+
+  // Our positions in the space including headers and footers
+  static double safeBlockHorizontal = 0.0;
   static double safeBlockVertical = 0.0;
 
   static const Color backroundCOLOR =
