@@ -113,4 +113,9 @@ class EnemyPlane extends PositionComponent {
     // in order to gauge the line towards the bottom from the start.
     dir = (bottomPosition - startpoints[startingpoint]).normalized();
   }
+
+  void reset() {
+    timeToRespawn = 0;
+    resetPlane();
+  }
 }

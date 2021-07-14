@@ -166,4 +166,10 @@ class MissileSystem {
       explosion.render(canvas);
     }
   }
+
+  void reset() {
+    for (int i = explosions.length - 1; i >= 0; --i) {
+      explosions.remove(i);
+    }
+  }
 }
