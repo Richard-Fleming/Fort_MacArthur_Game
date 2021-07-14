@@ -1,30 +1,42 @@
-import 'dart:ui';
-
-import 'package:flame/components.dart';
-
-import 'package:flame/game.dart';
-import 'package:flame/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fort_macarthur/game_loop.dart';
 
-class QuizGame {
-  TextPaint textPaint = TextPaint(
-      config: TextPaintConfig(
-    fontSize: 24.0,
-    fontFamily: 'Awesome Font',
-  ));
+class QuizScreen extends StatelessWidget {
+  final GameLoop gameRef;
+  QuizScreen({Key? key, required this.gameRef}) : super(key: key);
 
-  void onTapDown(TapDownInfo event) {
-    //fulfilledincreaseAmmo(1);
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50.0),
+            child: Text(
+              'Quiz',
+              style: TextStyle(fontSize: 50.0, color: Colors.red, shadows: [
+                Shadow(
+                    blurRadius: 20.0, color: Colors.blue, offset: Offset(0, 0))
+              ]),
+            ),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width / 3,
+            child: ElevatedButton(
+              onPressed: () {},
+              child: Text('Start'),
+            ),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width / 3,
+            child: ElevatedButton(
+              onPressed: () {},
+              child: Text('Go to next mission'),
+            ),
+          )
+        ],
+      ),
+    );
   }
-
-  buff(int value) {}
-
-  debuff(int value) {}
-
-  draw(Canvas canvas) {
-    textPaint.render(canvas, "wah" + '/20', Vector2(200, 10),
-        anchor: Anchor.topCenter);
-  }
-
-  update(double dt) {}
 }

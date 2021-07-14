@@ -1,3 +1,4 @@
+import 'dart:js';
 import 'dart:ui';
 import 'ammo.dart';
 import 'package:flame/game.dart';
