@@ -101,7 +101,10 @@ class MissileSystem {
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.missileDirection = ((tap.position - missile.size / 4.0) -
+              missile.position -
+              missile.size / 8.0)
+          .normalized();
       missile.faceDirection(missile.missileDirection);
     }
   }
@@ -129,7 +132,8 @@ class MissileSystem {
 
       // explosion happens when missile reaches it's destination
       if (missile.position.y < tap.position.y) {
-        explosions.add(Explosion(position: missile.position));
+        explosions
+            .add(Explosion(position: missile.position + missile.size / 2.0));
         missile.setPosition(base.position + base.center());
         missileLaunched = false;
         isPressed = false;
