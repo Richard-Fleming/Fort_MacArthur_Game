@@ -1,13 +1,13 @@
 import 'dart:ui';
 
-import 'ammo.dart';
+import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flame/components.dart'; // Needed for Anchor class
-import 'healthbar.dart';
-import 'enemyplane.dart';
-import 'missile_system.dart';
+import '../models/healthbar.dart';
+import '../models/enemyplane.dart';
+import '../models/missile_system.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {

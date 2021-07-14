@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
-import 'package:fort_macarthur/game/explosion.dart';
-import 'package:fort_macarthur/game/missile.dart';
+import 'package:fort_macarthur/game/models/explosion.dart';
+import 'package:fort_macarthur/Game/models/missile.dart';
 
 import 'game_object.dart';
 
