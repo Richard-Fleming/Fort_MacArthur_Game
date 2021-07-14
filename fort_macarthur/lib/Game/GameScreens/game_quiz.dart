@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fort_macarthur/game_loop.dart';
+import 'package:fort_macarthur/Game/game/game_loop.dart';
 
 class QuizScreen extends StatelessWidget {
   final GameLoop gameRef;
