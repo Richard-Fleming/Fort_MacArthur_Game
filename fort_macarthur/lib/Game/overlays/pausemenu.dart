@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
 import 'package:fort_macarthur/Game/overlays/pausebutton.dart';
-
 import '../game/game_loop.dart';
 
 class PauseMenu extends StatelessWidget {

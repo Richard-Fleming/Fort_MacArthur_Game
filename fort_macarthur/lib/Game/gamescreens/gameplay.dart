@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
 import 'package:fort_macarthur/Game/overlays/pausebutton.dart';
 import '../overlays/pausemenu.dart';
-import '../overlays/gameovermenu.dart';
+import '../overlays/game_over_menu.dart';
 
 // Calls the gameloop which handles gameplay related code.
 

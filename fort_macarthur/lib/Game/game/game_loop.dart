@@ -1,9 +1,9 @@
 import 'dart:ui';
-
+import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
@@ -94,6 +94,8 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.update(dt);
     healthbar.update(dt);
 
+    if (healthbar.getHealth() <= 0) {}
+    overlays.add(GameOverMenu.ID);
     // put anything to be updated such here
   }
 
