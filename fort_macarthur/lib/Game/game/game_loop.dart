@@ -1,45 +1,47 @@
 import 'dart:ui';
-
-import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/game/trail_particles.dart';
-
-import 'ammo.dart';
+import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
-import 'healthbar.dart';
-import 'enemyplane.dart';
-import 'missile_system.dart';
+import 'package:flame/components.dart'; // Needed for Anchor class
+import '../models/healthbar.dart';
+import '../models/enemyplane.dart';
+import '../models/missile_system.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
 
+  int enemyCount = 3;
+
   bool isPressed = false;
-  var healthbar = new HealthBar(100, 100);
+  bool isAlreadyLoaded = false;
+  late HealthBar healthbar;
+
   var ammoManager = new AmmunitionManager();
-  late TrailParticleSystem particles;
-  Paint paint = Paint()..color = Colors.white;
+
+  TextPaint textPaint = TextPaint(
+      config: TextPaintConfig(
+    fontSize: 20.0,
+    fontFamily: 'Awesome Font',
+  ));
+
+  bool paused = false;
+
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
-    // put image loading, class initialization here
-    add(healthbar);
-    // particles = new TrailParticleSystem(
-    //   // lifespan: 1,
-    //   parentDirection: Vector2(0, -1),
-    //   spawnPosition: Vector2.all(20),
-    //   color: paint.color,
-    //   speed: 40,
-    //   spawnRate: 0.2,
-    //   acceleration: 5,
-    //   // color: Colors.red,
-    //   radius: 8,
-    // );
-    for (int i = 0; i < 3; i++) {
-      add(EnemyPlane(size, healthbar));
+    // Check as if navigating between menuand gameplay it will be called multiple times
+    if (!isAlreadyLoaded) {
+      // put image loading, class initialization here
+      healthbar = HealthBar(size.x / 1.5, size.y - 50);
+      add(healthbar);
+
+      for (var i = 0; i < enemyCount; i++) {
+        add(EnemyPlane(size, healthbar));
+      }
+      missileSystem.baseInit(size);
     }
-    missileSystem.baseInit(size);
   }
 
   // touch start
@@ -78,6 +80,14 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.launchMissile();
   }
 
+  //Resets game when navigating between menu and game screens for example
+  void reset() {
+    missileSystem.reset();
+    components.whereType<EnemyPlane>().forEach((enemyPlane) {
+      enemyPlane.remove();
+    });
+  }
+
   // updates game
   void update(double dt) {
     super.update(dt);
@@ -94,7 +104,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.render(canvas);
     ammoManager.draw(canvas);
     healthbar.render(canvas);
-    // particles.render(canvas);
+
+    //TODO: Remove this when proper Enemy Manager is implemented.
+
+    textPaint.render(
+        canvas, enemyCount.toString() + ' Enemies Remain', Vector2(95, 10),
+        anchor: Anchor.topCenter);
   }
 
   // changes the background color

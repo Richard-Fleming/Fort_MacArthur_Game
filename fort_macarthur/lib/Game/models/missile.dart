@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:fort_macarthur/game/trail_particles.dart';
+import 'package:fort_macarthur/game/models/trail_particles.dart';
 
 import 'game_object.dart';
 
@@ -38,7 +38,7 @@ class Missile extends GameObjectRect {
   }
 
   void setPosition(Vector2 position) {
-    super.setPosition(position);
+    super.setPosition(position - (size / 2.0));
   }
 
   Vector2 get position {
@@ -53,14 +53,14 @@ class Missile extends GameObjectRect {
   void update(double dt) {
     super.update(dt);
     super.position.add(missileDirection * missileSpeed * dt);
-    particles.updatePosition(position);
+    particles.updatePosition(position + center());
     particles.updateDirection(missileDirection);
     particles.update(dt);
   }
 
   // draws the missile
   void render(Canvas canvas) {
-    super.render(canvas);
     particles.render(canvas);
+    super.render(canvas);
   }
 }

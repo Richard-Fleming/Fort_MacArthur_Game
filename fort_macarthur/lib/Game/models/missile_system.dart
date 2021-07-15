@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
-import 'package:fort_macarthur/game/explosion.dart';
-import 'package:fort_macarthur/game/missile.dart';
+import 'package:fort_macarthur/game/models/explosion.dart';
+import 'package:fort_macarthur/Game/models/missile.dart';
 
 import 'game_object.dart';
 
@@ -37,7 +37,7 @@ class MissileSystem {
         size: Vector2(30, 10),
         color: Color(0xFFFFFFFF),
         position: Vector2.zero(),
-        particleColor: Colors.blue);
+        particleColor: Colors.grey.shade400);
 
     tap = new GameObjectRect(
         size: Vector2(10, 10),
@@ -102,7 +102,10 @@ class MissileSystem {
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.missileDirection = ((tap.position - missile.size / 4.0) -
+              missile.position -
+              missile.size / 8.0)
+          .normalized();
       missile.faceDirection(missile.missileDirection);
     }
   }
@@ -130,7 +133,8 @@ class MissileSystem {
 
       // explosion happens when missile reaches it's destination
       if (missile.position.y < tap.position.y) {
-        explosions.add(Explosion(position: missile.position));
+        explosions
+            .add(Explosion(position: missile.position + missile.size / 2.0));
         missile.setPosition(base.position + base.center());
         missile.clearParticles();
         missileLaunched = false;
@@ -149,7 +153,6 @@ class MissileSystem {
 
   // render objects to the screen when certain conditions are met
   void render(Canvas canvas) {
-    base.render(canvas);
     if (missileLaunched) {
       missile.render(canvas);
     }
@@ -162,6 +165,14 @@ class MissileSystem {
 
     for (Explosion explosion in explosions) {
       explosion.render(canvas);
+    }
+
+    base.render(canvas);
+  }
+
+  void reset() {
+    for (int i = explosions.length - 1; i >= 0; --i) {
+      explosions.remove(i);
     }
   }
 }

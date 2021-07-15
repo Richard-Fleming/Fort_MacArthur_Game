@@ -40,7 +40,6 @@ class TrailParticleSystem {
       fadeOutRate: fadeOutRate,
       timeToLive: timeToLive,
     ));
-    // spawnTimer.repeat = true;
   }
 
   void updatePosition(Vector2 position) {

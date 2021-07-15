@@ -16,6 +16,7 @@ class HealthBar extends PositionComponent {
   final double top;
 
   bool fade = false;
+  bool dead = false;
 
   HealthBar(this.left, this.top) {
     // bar color starts out opaque
@@ -33,8 +34,15 @@ class HealthBar extends PositionComponent {
 
     if (fade) {
       fadeIn();
-    } else
+    } else {
       fadeOut();
+    }
+
+    if (getHealth() <= 0.0) {
+      print("Health value:" + health.toString());
+      dead = true;
+      health = maxHealth;
+    }
   }
 
   @override
@@ -66,7 +74,6 @@ class HealthBar extends PositionComponent {
       currentFade += fadeRate;
       if (currentFade > MAX_OPAQUE) currentFade = MAX_OPAQUE;
 
-      print(currentFade);
       applyPaint();
     }
   }
@@ -76,8 +83,11 @@ class HealthBar extends PositionComponent {
       currentFade -= fadeRate;
       if (currentFade < 0) currentFade = 0;
 
-      print(currentFade);
       applyPaint();
     }
+  }
+
+  double getHealth() {
+    return health;
   }
 }

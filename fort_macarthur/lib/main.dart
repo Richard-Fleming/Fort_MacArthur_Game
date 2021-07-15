@@ -1,10 +1,11 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/game/game_loop.dart';
+import 'package:fort_macarthur/Game/game/game_loop.dart';
+import 'Game/GameScreens/MainMenu.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: GameView(),
+    home: const MainMenu(),
   ));
 }
 
