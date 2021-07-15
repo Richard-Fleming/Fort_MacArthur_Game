@@ -2,9 +2,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
-import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
-import '../GameScreens/screenState.dart';
 
 class Button extends PositionComponent {
   TextPaint textPaint = TextPaint(
