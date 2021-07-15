@@ -36,7 +36,8 @@ class MissileSystem {
     missile = new Missile(
         size: Vector2(30, 10),
         color: Color(0xFFFFFFFF),
-        position: Vector2.zero());
+        position: Vector2.zero(),
+        particleColor: Colors.blue);
 
     tap = new GameObjectRect(
         size: Vector2(10, 10),
@@ -131,6 +132,7 @@ class MissileSystem {
       if (missile.position.y < tap.position.y) {
         explosions.add(Explosion(position: missile.position));
         missile.setPosition(base.position + base.center());
+        missile.clearParticles();
         missileLaunched = false;
         isPressed = false;
       }

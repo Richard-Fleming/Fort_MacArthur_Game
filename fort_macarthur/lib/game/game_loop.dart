@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/game/trail_particles.dart';
 
@@ -26,17 +25,17 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   Future<void> onLoad() async {
     // put image loading, class initialization here
     add(healthbar);
-    particles = new TrailParticleSystem(
-      // lifespan: 1,
-      parentDirection: Vector2(0, -1),
-      position: Vector2.all(20),
-      color: paint.color,
-      speed: 40,
-      spawnRate: 0.2,
-      acceleration: 5,
-      // color: Colors.red,
-      radius: 8,
-    );
+    // particles = new TrailParticleSystem(
+    //   // lifespan: 1,
+    //   parentDirection: Vector2(0, -1),
+    //   spawnPosition: Vector2.all(20),
+    //   color: paint.color,
+    //   speed: 40,
+    //   spawnRate: 0.2,
+    //   acceleration: 5,
+    //   // color: Colors.red,
+    //   radius: 8,
+    // );
     for (int i = 0; i < 3; i++) {
       add(EnemyPlane(size, healthbar));
     }
@@ -84,7 +83,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     super.update(dt);
     missileSystem.update(dt);
     healthbar.update(dt);
-    particles.update(dt);
+    // particles.update(dt);
 
     // put anything to be updated such here
   }
@@ -95,7 +94,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.render(canvas);
     ammoManager.draw(canvas);
     healthbar.render(canvas);
-    particles.render(canvas);
+    // particles.render(canvas);
   }
 
   // changes the background color
