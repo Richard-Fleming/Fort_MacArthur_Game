@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
-import 'package:fort_macarthur/Game/pausebutton.dart';
 
-import 'game/game_loop.dart';
+import '../game/game_loop.dart';
 
-class PauseMenu extends StatelessWidget {
-  static const String ID = 'PauseMenu';
+class GameOverMenu extends StatelessWidget {
+  static const String ID = 'GameOver';
   final GameLoop gameRef;
 
-  const PauseMenu({Key? key, required this.gameRef}) : super(key: key);
+  const GameOverMenu({Key? key, required this.gameRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class PauseMenu extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 50.0),
             child: Text(
-              'Game Paused',
+              'Game Over',
               style: TextStyle(
                 fontSize: 50.0,
                 color: Colors.black,
@@ -32,12 +31,9 @@ class PauseMenu extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             child: ElevatedButton(
               onPressed: () {
-                // TODO call resume engine method on gameRef
                 gameRef.resumeEngine();
-                gameRef.overlays.remove(PauseMenu.ID);
-                gameRef.overlays.add(PauseButton.ID);
               },
-              child: Text('Resume'),
+              child: Text('Back to Menu'),
             ),
           ),
 
@@ -46,7 +42,6 @@ class PauseMenu extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             child: ElevatedButton(
               onPressed: () {
-                gameRef.overlays.remove(PauseMenu.ID);
                 gameRef.reset();
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -54,7 +49,7 @@ class PauseMenu extends StatelessWidget {
                   ),
                 );
               },
-              child: Text('Return to Menu'),
+              child: Text('Exit'),
             ),
           ),
         ],
