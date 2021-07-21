@@ -46,7 +46,10 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
 
+    hitbox.size = Vector2(bodySize, bodySize);
     addShape(hitbox);
+
+    hitbox.component.size = Vector2(bodySize, bodySize);
 
     resetPlane();
   }
@@ -55,13 +58,15 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void update(double dt) {
     super.update(dt);
 
-    if (timeToRespawn <= 0)
-      hitbox.position = Vector2(hitbox.position.x + (dir.x * speed) * dt,
-          hitbox.position.y + (dir.y * speed) * dt);
-    else
+    if (timeToRespawn <= 0) {
+      hitbox.component.position = Vector2(
+          hitbox.component.position.x + (dir.x * speed) * dt,
+          hitbox.component.position.y + (dir.y * speed) * dt);
+      print(hitbox.component.position);
+    } else
       timeToRespawn -= dt;
 
-    if (hitbox.position.y > screenSize.y + hitbox.size.y) {
+    if (hitbox.component.position.y > screenSize.y + hitbox.size.y) {
       resetPlane();
     }
   }
@@ -77,7 +82,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // generates num between 1 and 3
     // minus 1 as arrays start at 0, so we get a range of 0 to 2.
     startingpoint = Random().nextInt(startpoints.length);
-    hitbox.position = startpoints[startingpoint];
+    hitbox.component.position = startpoints[startingpoint];
 
     // Now that the plane has been set up at the top,
     // we will not determine a bottom position
