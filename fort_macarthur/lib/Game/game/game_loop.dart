@@ -32,10 +32,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   bool paused = false;
 
-  // List<CustomParticle> test = [];
-  late ExplosionParticleSystem ex;
-  double testSpeed = 10;
-
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
     // Check as if navigating between menuand gameplay it will be called multiple times
@@ -49,29 +45,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
       }
       missileSystem.baseInit(size);
     }
-
-    ex = new ExplosionParticleSystem(
-      directionRange: Vector2(-1, 1),
-      spawnPosition: Vector2.all(200),
-      speed: testSpeed,
-      numOfParticles: 200,
-      timeToLive: 10,
-    );
-
-    // for (var i = 0; i < 200; ++i) {
-    //   test.add(new CustomParticle(
-    //     color: Color.fromARGB(
-    //       255,
-    //       intInRange(1, 255),
-    //       intInRange(1, 255),
-    //       intInRange(1, 255),
-    //     ),
-    //     position: Vector2.all(200),
-    //     speed: Vector2(
-    //         doubleInRange(-1, 1) * testSpeed, doubleInRange(-1, 1) * testSpeed),
-    //     timeToLive: 10,
-    //   ));
-    // }
   }
 
   // touch start
@@ -123,14 +96,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     super.update(dt);
     missileSystem.update(dt);
     healthbar.update(dt);
-
-    ex.update(dt);
-    // for (var t in test) {
-    //   t.update(dt);
-    // }
-    // particles.update(dt);
-
-    // put anything to be updated such here
   }
 
   // renders objects to the canvas
@@ -139,11 +104,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.render(canvas);
     ammoManager.draw(canvas);
     healthbar.render(canvas);
-
-    ex.render(canvas);
-    // for (var t in test) {
-    //   t.render(canvas);
-    // }
 
     //TODO: Remove this when proper Enemy Manager is implemented.
 
