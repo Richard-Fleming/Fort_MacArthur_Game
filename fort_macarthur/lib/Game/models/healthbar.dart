@@ -41,7 +41,6 @@ class HealthBar extends PositionComponent {
     if (getHealth() <= 0.0) {
       print("Health value:" + health.toString());
       dead = true;
-      health = maxHealth;
     }
   }
 
@@ -89,5 +88,10 @@ class HealthBar extends PositionComponent {
 
   double getHealth() {
     return health;
+  }
+
+  void reset() {
+    health = maxHealth;
+    dead = false;
   }
 }

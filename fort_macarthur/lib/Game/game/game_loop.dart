@@ -83,6 +83,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   //Resets game when navigating between menu and game screens for example
   void reset() {
     missileSystem.reset();
+    healthbar.reset();
     components.whereType<EnemyPlane>().forEach((EnemyPlane) {
       EnemyPlane.remove();
     });
@@ -94,8 +95,10 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.update(dt);
     healthbar.update(dt);
 
-    if (healthbar.getHealth() <= 0) {}
-    overlays.add(GameOverMenu.ID);
+    if (healthbar.getHealth() == 0) {
+      overlays.add(GameOverMenu.ID);
+    }
+
     // put anything to be updated such here
   }
 
