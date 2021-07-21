@@ -1,10 +1,11 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
+import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
-class EnemyPlane extends PositionComponent {
+class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // size of hitbox
   final double bodySize = 40.0;
 
@@ -36,7 +37,7 @@ class EnemyPlane extends PositionComponent {
   late HealthBar healthbar;
 
   // plane body
-  late Rect body;
+  HitboxShape hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
 
   EnemyPlane(this.screenSize, this.healthbar) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
@@ -44,6 +45,9 @@ class EnemyPlane extends PositionComponent {
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
+
+    addShape(hitbox);
+
     resetPlane();
   }
 
@@ -52,11 +56,12 @@ class EnemyPlane extends PositionComponent {
     super.update(dt);
 
     if (timeToRespawn <= 0)
-      body = body.translate((dir.x * speed) * dt, (dir.y * speed) * dt);
+      hitbox.position = Vector2(hitbox.position.x + (dir.x * speed) * dt,
+          hitbox.position.y + (dir.y * speed) * dt);
     else
       timeToRespawn -= dt;
 
-    if (body.top > screenSize.y + bodySize) {
+    if (hitbox.position.y > screenSize.y + hitbox.size.y) {
       resetPlane();
     }
   }
@@ -64,7 +69,7 @@ class EnemyPlane extends PositionComponent {
   @override
   void render(Canvas c) {
     super.render(c);
-    c.drawRect(body, Paint()..color = Colors.red);
+    hitbox.render(c, Paint()..color = Colors.red);
   }
 
   /// Resets Enemy Plane to a New Position
@@ -72,8 +77,7 @@ class EnemyPlane extends PositionComponent {
     // generates num between 1 and 3
     // minus 1 as arrays start at 0, so we get a range of 0 to 2.
     startingpoint = Random().nextInt(startpoints.length);
-    body = Rect.fromLTWH(startpoints[startingpoint].x,
-        startpoints[startingpoint].y, bodySize, bodySize);
+    hitbox.position = startpoints[startingpoint];
 
     // Now that the plane has been set up at the top,
     // we will not determine a bottom position

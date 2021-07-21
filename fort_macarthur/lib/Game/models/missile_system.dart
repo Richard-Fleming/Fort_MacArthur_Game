@@ -57,7 +57,7 @@ class MissileSystem {
       position: Vector2((displaySize.x / 2) - 30, displaySize.y - 30),
     );
 
-    lineStart = base.position + base.center;
+    lineStart = base.position + base.center();
   }
 
   // launches missile on tap
@@ -67,8 +67,8 @@ class MissileSystem {
 
       tap.setPosition(
           Vector2(event.eventPosition.game.x, event.eventPosition.game.y) -
-              tap.center);
-      missile.setPosition(base.position + base.center);
+              tap.center());
+      missile.setPosition(base.position + base.center());
 
       // missile direction calculations
       missile.missileDirection = (tap.position - missile.position).normalized();
@@ -82,8 +82,8 @@ class MissileSystem {
       isPressed = true;
       tap.setPosition(
           Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
-              tap.center);
-      missile.setPosition(base.position + base.center);
+              tap.center());
+      missile.setPosition(base.position + base.center());
 
       // missile direction calculations
       missile.missileDirection = (tap.position - missile.position).normalized();
@@ -97,8 +97,8 @@ class MissileSystem {
       isPressed = true;
       tap.setPosition(
           Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
-              tap.center);
-      missile.setPosition(base.position + base.center);
+              tap.center());
+      missile.setPosition(base.position + base.center());
 
       // missile direction calculations
       missile.missileDirection = ((tap.position - missile.size / 4.0) -
@@ -134,7 +134,7 @@ class MissileSystem {
       if (missile.position.y < tap.position.y) {
         explosions
             .add(Explosion(position: missile.position + missile.size / 2.0));
-        missile.setPosition(base.position + base.center);
+        missile.setPosition(base.position + base.center());
         missileLaunched = false;
         isPressed = false;
       }
@@ -159,7 +159,7 @@ class MissileSystem {
     if (isPressed || missileLaunched) {
       tap.render(canvas);
       canvas.drawLine(lineStart.toOffset(),
-          (tap.position + tap.center).toOffset(), whiteBox);
+          (tap.position + tap.center()).toOffset(), whiteBox);
     }
 
     for (Explosion explosion in explosions) {
