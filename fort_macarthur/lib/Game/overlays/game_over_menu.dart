@@ -41,8 +41,8 @@ class GameOverMenu extends StatelessWidget {
                           style: TextStyle(fontSize: 10.0),
                         ),
                         onPressed: () {
-                          gameRef.overlays.remove(GameOverMenu.ID);
                           gameRef.reset();
+                          gameRef.overlays.remove(GameOverMenu.ID);
                           // Push and replace current screen (i.e MainMenu) with
                           // SelectSpaceship(), so that player can select a spaceship.
                           Navigator.of(context).pushReplacement(

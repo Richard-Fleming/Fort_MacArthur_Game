@@ -81,9 +81,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   void reset() {
     missileSystem.reset();
     healthbar.reset();
-    components.whereType<EnemyPlane>().forEach((EnemyPlane) {
-      EnemyPlane.remove();
-    });
+    ammoManager.reset();
   }
 
   // updates game
