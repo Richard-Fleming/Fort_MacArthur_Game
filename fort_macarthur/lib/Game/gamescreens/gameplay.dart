@@ -1,9 +1,11 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
-import 'package:fort_macarthur/Game/pausebutton.dart';
+import 'package:fort_macarthur/Game/overlays/pausebutton.dart';
+import '../overlays/pausemenu.dart';
+import '../overlays/game_over_menu.dart';
 
-import '../pausemenu.dart';
+// Calls the gameloop which handles gameplay related code.
 
 // Creating this as a file private object so as to
 // avoid unwanted rebuilds of the whole game object.
@@ -34,6 +36,10 @@ class GamePlay extends StatelessWidget {
                   gameRef: gameRef,
                 ),
             PauseMenu.ID: (BuildContext context, GameLoop gameRef) => PauseMenu(
+                  gameRef: gameRef,
+                ),
+            GameOverMenu.ID: (BuildContext context, GameLoop gameRef) =>
+                GameOverMenu(
                   gameRef: gameRef,
                 ),
           },
