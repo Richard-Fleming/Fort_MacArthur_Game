@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/missile.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
@@ -33,6 +34,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   double speed = 160;
 
   bool initialSpawn = true;
+  bool destroyed = false;
 
   late HealthBar healthbar;
 
@@ -62,7 +64,6 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
       hitbox.component.position = Vector2(
           hitbox.component.position.x + (dir.x * speed) * dt,
           hitbox.component.position.y + (dir.y * speed) * dt);
-      print(hitbox.component.position);
     } else
       timeToRespawn -= dt;
 
@@ -74,18 +75,18 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   @override
   void render(Canvas c) {
     super.render(c);
+    // TODO: Remove this once a proper sprite is in order for the Enemy Plane
     hitbox.render(c, Paint()..color = Colors.red);
   }
 
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
-    // generates num between 1 and 3
-    // minus 1 as arrays start at 0, so we get a range of 0 to 2.
+    // generates num between 0 and 2
     startingpoint = Random().nextInt(startpoints.length);
     hitbox.component.position = startpoints[startingpoint];
 
     // Now that the plane has been set up at the top,
-    // we will not determine a bottom position
+    // we will now determine a bottom position
     pickBottomPosition();
 
     // With all info required, now find the normalized path
@@ -94,10 +95,13 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     var random = new Random(); // needed to allow access for static variables
     timeToRespawn = random.nextDouble() * maxTimeBetweenRespawn;
 
-    if (!initialSpawn)
+    // only damage the health bar if the plane was not destroyed on this reset
+    // and it isn't the plane's first time spawning in
+    if (!initialSpawn && !destroyed)
       healthbar.manageHealth(-2);
-    else
+    else if (initialSpawn) {
       initialSpawn = false;
+    }
   }
 
   // Determine the position at the bottom of the screeen
@@ -121,5 +125,14 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // against the chosen starting point
     // in order to gauge the line towards the bottom from the start.
     dir = (bottomPosition - startpoints[startingpoint]).normalized();
+  }
+
+  @override
+  void onCollision(Set<Vector2> points, Collidable other) {
+    if (other is Missile) {
+      destroyed = true;
+      resetPlane();
+      print("missile was touched :))");
+    }
   }
 }

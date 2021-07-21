@@ -1,10 +1,11 @@
 import 'dart:math';
 
+import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 
-class GameObjectRect {
+class GameObjectRect extends PositionComponent {
   late Rectangle collider;
   late Paint paint;
   Vector2 position;
@@ -41,12 +42,13 @@ class GameObjectRect {
   }
 
   // returns center of the rectangle
-  Vector2 center() {
+  Vector2 getCenter() {
     return Vector2(size.x / 2, size.y / 2);
   }
 
   // updates the shape's properties
   void update(double dt) {
+    super.update(dt);
     collider.offsetPosition = this.position;
     collider.angle = this.angle;
     collider.size = this.size;
@@ -54,6 +56,7 @@ class GameObjectRect {
 
   // render the shape
   void render(Canvas canvas) {
+    super.render(canvas);
     collider.render(canvas, paint);
   }
 }
