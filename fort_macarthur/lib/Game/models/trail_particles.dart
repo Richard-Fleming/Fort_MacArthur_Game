@@ -6,7 +6,7 @@ import 'package:flame/game.dart';
 class TrailParticleSystem {
   Vector2 parentDirection;
   Vector2 spawnPosition;
-  List<TrailParticle> particles = [];
+  List<CustomParticle> particles = [];
   late Timer spawnTimer;
 
   Color color;
@@ -31,7 +31,7 @@ class TrailParticleSystem {
   }) {
     spawnTimer = new Timer(spawnRate);
     spawnTimer.start();
-    particles.add(new TrailParticle(
+    particles.add(new CustomParticle(
       color: color,
       speed: -parentDirection * speed,
       acceleration: -parentDirection * acceleration,
@@ -53,7 +53,7 @@ class TrailParticleSystem {
   void update(double dt) {
     spawnTimer.update(dt);
     if (spawnTimer.finished) {
-      particles.add(new TrailParticle(
+      particles.add(new CustomParticle(
         color: color,
         speed: -parentDirection * speed,
         acceleration: -parentDirection * acceleration,
@@ -83,7 +83,7 @@ class TrailParticleSystem {
   }
 }
 
-class TrailParticle extends AcceleratedParticle {
+class CustomParticle extends AcceleratedParticle {
   double radius;
   Color color;
   int fadeOutRate;
@@ -92,7 +92,7 @@ class TrailParticle extends AcceleratedParticle {
 
   bool fadedOut = false;
 
-  TrailParticle({
+  CustomParticle({
     Vector2? position,
     Vector2? speed,
     Vector2? acceleration,
