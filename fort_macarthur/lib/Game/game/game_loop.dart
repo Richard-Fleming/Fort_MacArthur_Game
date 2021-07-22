@@ -1,12 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/game/models/explosion_particles.dart';
-import 'package:fort_macarthur/game/models/trail_particles.dart';
-import 'package:fort_macarthur/game/utilities/random_range.dart';
+import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
@@ -29,8 +26,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     fontSize: 20.0,
     fontFamily: 'Awesome Font',
   ));
-
-  bool paused = false;
 
   // function for loading in assets and initializing classes
   Future<void> onLoad() async {
@@ -86,9 +81,13 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   //Resets game when navigating between menu and game screens for example
   void reset() {
     missileSystem.reset();
+
     components.whereType<EnemyPlane>().forEach((enemyPlane) {
       enemyPlane.remove();
     });
+
+    healthbar.reset();
+    ammoManager.reset();
   }
 
   // updates game
@@ -96,6 +95,10 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     super.update(dt);
     missileSystem.update(dt);
     healthbar.update(dt);
+
+    if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
+      overlays.add(GameOverMenu.ID);
+    }
   }
 
   // renders objects to the canvas
@@ -108,7 +111,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     //TODO: Remove this when proper Enemy Manager is implemented.
 
     textPaint.render(
-        canvas, enemyCount.toString() + ' Enemies Remain', Vector2(95, 10),
+        canvas, enemyCount.toString() + ' Enemies That Remain', Vector2(95, 10),
         anchor: Anchor.topCenter);
   }
 

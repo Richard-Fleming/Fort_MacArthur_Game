@@ -26,6 +26,11 @@ class Explosion {
         radius: initialRadius, color: Color(0xFFFFFFFF), position: position);
   }
 
+  void reset() {
+    alive = false;
+    active = false;
+  }
+
   // increases the explosion radius until max is reached as long as it's
   // active
   void update(double dt) {
