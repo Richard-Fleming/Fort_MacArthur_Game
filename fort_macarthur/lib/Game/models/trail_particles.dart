@@ -17,6 +17,7 @@ class TrailParticleSystem {
   double radius;
   int fadeOutRate;
   double timeToLive;
+  double shrinkRate;
 
   TrailParticleSystem({
     required this.parentDirection,
@@ -28,6 +29,7 @@ class TrailParticleSystem {
     this.radius = 10.0,
     this.fadeOutRate = 1,
     this.timeToLive = 0.0,
+    this.shrinkRate = 0.1,
   }) {
     spawnTimer = new Timer(spawnRate);
     spawnTimer.start();
@@ -69,6 +71,9 @@ class TrailParticleSystem {
 
     for (int i = particles.length - 1; i >= 0; --i) {
       particles.elementAt(i).update(dt);
+
+      if (particles.elementAt(i).radius >= 0.1)
+        particles.elementAt(i).radius -= 0.1;
 
       if (particles.elementAt(i).hasFadedOut()) {
         particles.removeAt(i);
