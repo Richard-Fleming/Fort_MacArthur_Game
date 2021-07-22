@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
@@ -28,6 +29,9 @@ class EnemyPlane extends PositionComponent {
   // heading vector
   Vector2 dir = Vector2.zero();
 
+  // position used for the particles
+  Vector2 position = Vector2.zero();
+
   // speed at which plane approaches end position
   double speed = 160;
 
@@ -38,6 +42,8 @@ class EnemyPlane extends PositionComponent {
   // plane body
   late Rect body;
 
+  late TrailParticleSystem particles;
+
   EnemyPlane(this.screenSize, this.healthbar) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
     startpoints.add(Vector2(
@@ -45,25 +51,42 @@ class EnemyPlane extends PositionComponent {
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
     resetPlane();
+
+    particles = new TrailParticleSystem(
+      parentDirection: -dir,
+      spawnPosition: position,
+      color: Colors.amber[600]!,
+      speed: 20,
+      spawnRate: 0.005,
+      fadeOutRate: 4,
+      acceleration: 5,
+      radius: 10,
+    );
   }
 
   @override
   void update(double dt) {
     super.update(dt);
 
-    if (timeToRespawn <= 0)
+    if (timeToRespawn <= 0) {
       body = body.translate((dir.x * speed) * dt, (dir.y * speed) * dt);
-    else
+      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
+    } else
       timeToRespawn -= dt;
 
     if (body.top > screenSize.y + bodySize) {
       resetPlane();
     }
+
+    particles.updatePosition(position + Vector2.all(bodySize / 2));
+    particles.updateDirection(-dir);
+    particles.update(dt);
   }
 
   @override
   void render(Canvas c) {
     super.render(c);
+    particles.render(c);
     c.drawRect(body, Paint()..color = Colors.red);
   }
 
@@ -74,6 +97,9 @@ class EnemyPlane extends PositionComponent {
     startingpoint = Random().nextInt(startpoints.length);
     body = Rect.fromLTWH(startpoints[startingpoint].x,
         startpoints[startingpoint].y, bodySize, bodySize);
+
+    position =
+        Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
 
     // Now that the plane has been set up at the top,
     // we will not determine a bottom position
