@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
@@ -80,6 +81,11 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   //Resets game when navigating between menu and game screens for example
   void reset() {
     missileSystem.reset();
+
+    components.whereType<EnemyPlane>().forEach((enemyPlane) {
+      enemyPlane.remove();
+    });
+
     healthbar.reset();
     ammoManager.reset();
   }
@@ -93,8 +99,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
       overlays.add(GameOverMenu.ID);
     }
-
-    // put anything to be updated such here
   }
 
   // renders objects to the canvas

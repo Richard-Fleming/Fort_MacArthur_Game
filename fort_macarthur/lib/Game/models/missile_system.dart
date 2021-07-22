@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:fort_macarthur/game/models/explosion.dart';
 import 'package:fort_macarthur/Game/models/missile.dart';
+import 'package:fort_macarthur/game/models/explosion_particles.dart';
 
 import 'game_object.dart';
 
@@ -20,6 +21,8 @@ class MissileSystem {
 
   // allows for multiple explosions to go off at the same time
   List<Explosion> explosions = [];
+  List<ExplosionParticleSystem> explosionParticles =
+      []; // allows explosion particles to linger longer than the explosion hitbox
 
   double missileSpeed = 300;
   double explosionInitialRadius = 10;
@@ -36,7 +39,8 @@ class MissileSystem {
     missile = new Missile(
         size: Vector2(30, 10),
         color: Color(0xFFFFFFFF),
-        position: Vector2.zero());
+        position: Vector2.zero(),
+        particleColor: Colors.grey.shade400);
 
     tap = new GameObjectRect(
         size: Vector2(10, 10),
@@ -132,9 +136,27 @@ class MissileSystem {
 
       // explosion happens when missile reaches it's destination
       if (missile.position.y < tap.position.y) {
-        explosions
-            .add(Explosion(position: missile.position + missile.size / 2.0));
+        explosions.add(Explosion(
+          position: missile.position + missile.size / 2.0,
+        ));
+
+        // create an instance of the explosion particles
+        explosionParticles.add(ExplosionParticleSystem(
+          directionRange: Vector2(-1, 1),
+          spawnPosition: missile.position + missile.size / 2.0,
+          minSpeed: 30,
+          maxSpeed: 60,
+          numOfParticles: 200,
+          color: Color(0xFFF76D23), // light rust orange color,
+          fadeOutRate: 3,
+          timeToLive: 0.2,
+          minAcceleration: 1,
+          maxAcceleration: 10,
+          radius: 15,
+        ));
+
         missile.setPosition(base.position + base.center());
+        missile.clearParticles();
         missileLaunched = false;
         isPressed = false;
       }
@@ -147,11 +169,14 @@ class MissileSystem {
         explosions.removeAt(i);
       }
     }
+
+    for (int i = explosionParticles.length - 1; i >= 0; --i) {
+      explosionParticles.elementAt(i).update(dt);
+    }
   }
 
   // render objects to the screen when certain conditions are met
   void render(Canvas canvas) {
-    base.render(canvas);
     if (missileLaunched) {
       missile.render(canvas);
     }
@@ -165,6 +190,13 @@ class MissileSystem {
     for (Explosion explosion in explosions) {
       explosion.render(canvas);
     }
+
+    for (ExplosionParticleSystem explosionParticleSystem
+        in explosionParticles) {
+      explosionParticleSystem.render(canvas);
+    }
+
+    base.render(canvas);
   }
 
   void reset() {
