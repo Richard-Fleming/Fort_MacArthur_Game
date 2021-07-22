@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/models/missile.dart';
+import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
@@ -30,6 +31,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // heading vector
   Vector2 dir = Vector2.zero();
 
+  // position used for the particles
+  Vector2 position = Vector2.zero();
+
   // speed at which plane approaches end position
   double speed = 160;
 
@@ -40,6 +44,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   // plane body
   HitboxShape hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
+
+  late TrailParticleSystem particles;
 
   EnemyPlane(this.screenSize, this.healthbar) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
@@ -54,6 +60,17 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     hitbox.component.size = Vector2(bodySize, bodySize);
 
     resetPlane();
+
+    particles = new TrailParticleSystem(
+      parentDirection: -dir,
+      spawnPosition: position,
+      color: Colors.amber[600]!,
+      speed: 20,
+      spawnRate: 0.005,
+      fadeOutRate: 4,
+      acceleration: 5,
+      radius: 10,
+    );
   }
 
   @override
@@ -64,12 +81,17 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
       hitbox.component.position = Vector2(
           hitbox.component.position.x + (dir.x * speed) * dt,
           hitbox.component.position.y + (dir.y * speed) * dt);
+      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
     } else
       timeToRespawn -= dt;
 
     if (hitbox.component.position.y > screenSize.y + hitbox.size.y) {
       resetPlane();
     }
+
+    particles.updatePosition(position + Vector2.all(bodySize / 2));
+    particles.updateDirection(-dir);
+    particles.update(dt);
   }
 
   @override
@@ -77,6 +99,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
     hitbox.render(c, Paint()..color = Colors.red);
+    particles.render(c);
   }
 
   /// Resets Enemy Plane to a New Position
@@ -84,6 +107,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // generates num between 0 and 2
     startingpoint = Random().nextInt(startpoints.length);
     hitbox.component.position = startpoints[startingpoint];
+
+    position =
+        Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
 
     // Now that the plane has been set up at the top,
     // we will now determine a bottom position
@@ -134,5 +160,10 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
       resetPlane();
       print("missile was touched :))");
     }
+  }
+
+  void reset() {
+    timeToRespawn = 0;
+    resetPlane();
   }
 }

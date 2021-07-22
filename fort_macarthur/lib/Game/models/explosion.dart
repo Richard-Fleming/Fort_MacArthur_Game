@@ -8,6 +8,7 @@ import 'game_object.dart';
 // reaches it's destination
 class Explosion {
   late GameObjectCircle explosion;
+
   double initialRadius;
   double maxRadius;
   double radiusIncreaseSpeed;
@@ -23,6 +24,11 @@ class Explosion {
       required Vector2 position}) {
     explosion = new GameObjectCircle(
         radius: initialRadius, color: Color(0xFFFFFFFF), position: position);
+  }
+
+  void reset() {
+    alive = false;
+    active = false;
   }
 
   // increases the explosion radius until max is reached as long as it's

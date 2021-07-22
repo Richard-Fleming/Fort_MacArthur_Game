@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:fort_macarthur/Game/models/enemyplane.dart';
+import 'package:fort_macarthur/game/models/trail_particles.dart';
 
 import 'game_object.dart';
 
@@ -11,17 +12,18 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
   Vector2 missileDirection = Vector2.zero();
   double missileSpeed;
   bool touchedPlane = false;
-  Color missileColor;
+  late TrailParticleSystem particles;
 
   Missile(
       {required Vector2 size,
-      required this.missileColor,
+      required Color color,
       required Vector2 position,
       double angle = 0.0,
+      Color particleColor = Colors.white,
       this.missileSpeed = 300.0})
       : super(
           size: size,
-          color: missileColor,
+          color: color,
           position: position,
           angle: angle,
         ) {
@@ -34,6 +36,17 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
     collider.component.size = size;
     collider.component.position = position;
     collider.component.angle = angle;
+
+    particles = new TrailParticleSystem(
+      parentDirection: -missileDirection,
+      spawnPosition: position,
+      color: particleColor,
+      speed: 40,
+      spawnRate: 0.005,
+      fadeOutRate: 8,
+      acceleration: 5,
+      radius: 5,
+    );
   }
 
   void setPosition(Vector2 position) {
@@ -46,12 +59,19 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
     return super.position;
   }
 
+  void clearParticles() {
+    particles.particles.clear();
+  }
+
   // moves the missile in it's direction
   void update(double dt) {
     super.update(dt);
     super.position.add(missileDirection * missileSpeed * dt);
     collider.position = super.position;
     collider.component.position = super.position;
+    particles.updatePosition(position + getCenter());
+    particles.updateDirection(missileDirection);
+    particles.update(dt);
   }
 
   @override
@@ -64,6 +84,7 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
 
   // draws the missile
   void render(Canvas canvas) {
+    particles.render(canvas);
     super.render(canvas);
   }
 }
