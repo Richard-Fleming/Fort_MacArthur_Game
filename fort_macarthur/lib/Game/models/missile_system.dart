@@ -75,7 +75,10 @@ class MissileSystem {
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.missileDirection = ((tap.position - missile.size / 4.0) -
+              missile.position -
+              missile.size / 8.0)
+          .normalized();
       missile.faceDirection(missile.missileDirection);
     }
   }
@@ -90,7 +93,10 @@ class MissileSystem {
       missile.setPosition(base.position + base.center());
 
       // missile direction calculations
-      missile.missileDirection = (tap.position - missile.position).normalized();
+      missile.missileDirection = ((tap.position - missile.size / 4.0) -
+              missile.position -
+              missile.size / 8.0)
+          .normalized();
       missile.faceDirection(missile.missileDirection);
     }
   }
