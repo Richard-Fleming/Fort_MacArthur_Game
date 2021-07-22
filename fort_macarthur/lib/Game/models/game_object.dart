@@ -55,8 +55,8 @@ class GameObjectRect extends PositionComponent {
   }
 
   // render the shape
+  // ignore: must_call_super
   void render(Canvas canvas) {
-    super.render(canvas);
     collider.render(canvas, paint);
   }
 }
@@ -102,5 +102,71 @@ class GameObjectCircle {
   // draw the shape
   void render(Canvas canvas) {
     canvas.drawCircle(collider.position.toOffset(), radius, paint);
+  }
+}
+
+class GameObjectCollRect extends PositionComponent {
+  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
+  late Paint paint;
+  Vector2 position;
+  Vector2 size;
+  double angle;
+
+  // generic rectangle shape object. can be rotated, resized, and moved.
+  GameObjectCollRect(
+      {required this.size,
+      required Color color,
+      required this.position,
+      this.angle = 0.0}) {
+    paint = new Paint()..color = color;
+    collider.offsetPosition = position;
+    collider.size = size;
+    collider.position = position;
+  }
+
+  void setPosition(Vector2 position) {
+    this.position = position;
+    collider.position = position;
+  }
+
+  void setAngle(double angle) {
+    this.angle = angle;
+    collider.angle = angle;
+  }
+
+  void setSize(Vector2 size) {
+    this.size = size;
+    collider.size = size;
+  }
+
+  // calculates angle to face the direction passed.
+  // far from perfect
+  void faceDirection(Vector2 direction) {
+    this.angle = atan2(direction.y, direction.x);
+    collider.angle = this.angle;
+  }
+
+  // returns center of the rectangle
+  Vector2 getCenter() {
+    return Vector2(size.x / 2, size.y / 2);
+  }
+
+  // updates the shape's properties
+  void update(double dt) {
+    super.update(dt);
+    collider.offsetPosition = this.position;
+    collider.position = this.position;
+    collider.angle = this.angle;
+    collider.size = this.size;
+
+    collider.component.position = this.position;
+    collider.component.angle = this.angle;
+    collider.component.size = this.size;
+  }
+
+  // render the shape
+  // ignore: must_call_super
+  void render(Canvas canvas) {
+    collider.render(canvas, paint);
   }
 }
