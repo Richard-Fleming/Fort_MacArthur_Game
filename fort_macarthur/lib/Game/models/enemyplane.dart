@@ -55,9 +55,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
 
     hitbox.size = Vector2(bodySize, bodySize);
+    hitbox.offsetPosition = startpoints[0];
     addShape(hitbox);
-
-    hitbox.component.size = Vector2(bodySize, bodySize);
 
     resetPlane();
 
@@ -99,6 +98,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
     hitbox.render(c, Paint()..color = Colors.red);
+
     particles.render(c);
   }
 

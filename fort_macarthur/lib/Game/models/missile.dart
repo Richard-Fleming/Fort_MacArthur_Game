@@ -1,14 +1,16 @@
+import 'dart:math';
+
+import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:fort_macarthur/Game/models/enemyplane.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 
-import 'game_object.dart';
-
 // class that handles the missile bounding box that is moving towards
 // it's destination
-class Missile extends GameObjectCollRect with Hitbox, Collidable {
+class Missile extends PositionComponent with Hitbox, Collidable {
+  HitboxShape collider = HitboxRectangle();
   Vector2 missileDirection = Vector2.zero();
   double missileSpeed;
   bool touchedPlane = false;
@@ -23,7 +25,6 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
       this.missileSpeed = 300.0})
       : super(
           size: size,
-          color: color,
           position: position,
           angle: angle,
         ) {
@@ -32,10 +33,6 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
     collider.angle = angle;
 
     addShape(collider);
-
-    collider.component.size = size;
-    collider.component.position = position;
-    collider.component.angle = angle;
 
     particles = new TrailParticleSystem(
       parentDirection: -missileDirection,
@@ -50,13 +47,19 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
   }
 
   void setPosition(Vector2 position) {
-    super.setPosition(position - (size / 2.0));
     collider.offsetPosition = position - (size / 2.0);
+    particles.updatePosition(collider.position);
     // collider.component.position = position - (size / 2.0);
   }
 
   Vector2 get position {
-    return super.position;
+    return collider.offsetPosition;
+  }
+
+  // calculates angle to face the direction passed.
+  // far from perfect
+  void faceDirection(Vector2 direction) {
+    collider.angle = atan2(direction.y, direction.x);
   }
 
   void clearParticles() {
@@ -66,10 +69,8 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
   // moves the missile in it's direction
   void update(double dt) {
     super.update(dt);
-    super.position.add(missileDirection * missileSpeed * dt);
-    collider.offsetPosition = super.position;
-    collider.offsetPosition = super.position;
-    particles.updatePosition(position + getCenter());
+    collider.offsetPosition.add(missileDirection * missileSpeed * dt);
+    particles.updatePosition(collider.position);
     particles.updateDirection(missileDirection);
     particles.update(dt);
   }
@@ -85,6 +86,7 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
   // draws the missile
   void render(Canvas canvas) {
     particles.render(canvas);
+    collider.render(canvas, Paint()..color = Colors.white);
     super.render(canvas);
   }
 }
