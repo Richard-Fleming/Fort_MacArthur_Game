@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:fort_macarthur/quizPage.dart';
+
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
@@ -96,6 +98,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
       super.update(dt);
       missileSystem.update(dt);
       healthbar.update(dt);
+      if (ammoManager.ammo <= 0) {
+        print("Game has ended");
+      }
     }
 
     // put anything to be updated such here
