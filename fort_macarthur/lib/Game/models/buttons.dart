@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
-import 'package:flame/gestures.dart';
 import 'package:flutter/cupertino.dart';
 
 class Button extends PositionComponent {

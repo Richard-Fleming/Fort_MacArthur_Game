@@ -14,6 +14,10 @@ class AmmunitionManager {
     fontFamily: 'Awesome Font',
   ));
 
+  void reset() {
+    ammo = 5;
+  }
+
   void onTapDown(TapDownInfo event) {
     //print("Player tap down on ${event.eventPosition.game}");
     decreaseAmmo(1);
