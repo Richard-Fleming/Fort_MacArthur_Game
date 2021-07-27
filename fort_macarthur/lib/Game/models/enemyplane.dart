@@ -78,14 +78,14 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.update(dt);
 
     if (timeToRespawn <= 0) {
-      hitbox.component.position = Vector2(
-          hitbox.component.position.x + (dir.x * speed) * dt,
-          hitbox.component.position.y + (dir.y * speed) * dt);
+      hitbox.offsetPosition = Vector2(
+          hitbox.offsetPosition.x + (dir.x * speed) * dt,
+          hitbox.offsetPosition.y + (dir.y * speed) * dt);
       position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
     } else
       timeToRespawn -= dt;
 
-    if (hitbox.component.position.y > screenSize.y + hitbox.size.y) {
+    if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
       resetPlane();
     }
 
@@ -106,7 +106,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void resetPlane() {
     // generates num between 0 and 2
     startingpoint = Random().nextInt(startpoints.length);
-    hitbox.component.position = startpoints[startingpoint];
+    hitbox.offsetPosition = startpoints[startingpoint];
 
     position =
         Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);

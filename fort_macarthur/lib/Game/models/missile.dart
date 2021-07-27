@@ -28,7 +28,7 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
           angle: angle,
         ) {
     collider.size = size;
-    collider.position = position;
+    collider.offsetPosition = position;
     collider.angle = angle;
 
     addShape(collider);
@@ -51,8 +51,8 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
 
   void setPosition(Vector2 position) {
     super.setPosition(position - (size / 2.0));
-    collider.position = position - (size / 2.0);
-    collider.component.position = position - (size / 2.0);
+    collider.offsetPosition = position - (size / 2.0);
+    // collider.component.position = position - (size / 2.0);
   }
 
   Vector2 get position {
@@ -67,8 +67,8 @@ class Missile extends GameObjectCollRect with Hitbox, Collidable {
   void update(double dt) {
     super.update(dt);
     super.position.add(missileDirection * missileSpeed * dt);
-    collider.position = super.position;
-    collider.component.position = super.position;
+    collider.offsetPosition = super.position;
+    collider.offsetPosition = super.position;
     particles.updatePosition(position + getCenter());
     particles.updateDirection(missileDirection);
     particles.update(dt);
