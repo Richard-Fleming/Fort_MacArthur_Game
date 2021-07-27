@@ -107,8 +107,11 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     //TODO: Remove this when proper Enemy Manager is implemented.
 
     textPaint.render(
-        canvas, enemyCount.toString() + ' Enemies That Remain', Vector2(95, 10),
-        anchor: Anchor.topCenter);
+      canvas,
+      enemyCount.toString() + ' Enemies That Remain',
+      Vector2(95, 10),
+      anchor: Anchor.topCenter,
+    );
   }
 
   // changes the background color
