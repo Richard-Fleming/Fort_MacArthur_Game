@@ -96,9 +96,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
     missileSystem.update(dt);
     healthbar.update(dt);
 
-    if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
-      overlays.add(GameOverMenu.ID);
-    }
+    // if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
+    //   overlays.add(GameOverMenu.ID);
+    // }
   }
 
   // renders objects to the canvas

@@ -75,14 +75,6 @@ class Missile extends PositionComponent with Hitbox, Collidable {
     particles.update(dt);
   }
 
-  @override
-  void onCollision(Set<Vector2> points, Collidable other) {
-    if (other is EnemyPlane) {
-      touchedPlane = true;
-      print("plane was touched :))");
-    }
-  }
-
   // draws the missile
   void render(Canvas canvas) {
     particles.render(canvas);

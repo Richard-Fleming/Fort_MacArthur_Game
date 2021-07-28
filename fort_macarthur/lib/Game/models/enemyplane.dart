@@ -8,6 +8,9 @@ import 'dart:math';
 import 'healthbar.dart';
 
 class EnemyPlane extends PositionComponent with Hitbox, Collidable {
+  // plane body
+  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
+
   // size of hitbox
   final double bodySize = 40.0;
 
@@ -27,23 +30,20 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   // vector of determined end position
   Vector2 bottomPosition = Vector2.zero();
-
   // heading vector
   Vector2 dir = Vector2.zero();
-
   // position used for the particles
   Vector2 position = Vector2.zero();
 
   // speed at which plane approaches end position
-  double speed = 160;
+  double speed = 60;
 
+  // whether this plane has only just spawned or not
   bool initialSpawn = true;
+  // if the plane is destroyed yet
   bool destroyed = false;
 
   late HealthBar healthbar;
-
-  // plane body
-  HitboxShape hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
 
   late TrailParticleSystem particles;
 
@@ -54,9 +54,12 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
 
-    hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = startpoints[0];
-    addShape(hitbox);
+    collider.offsetPosition = position;
+    collider.angle = angle;
+
+    addShape(collider);
+
+    collider.component.size = Vector2(bodySize, bodySize);
 
     resetPlane();
 
@@ -77,14 +80,12 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.update(dt);
 
     if (timeToRespawn <= 0) {
-      hitbox.offsetPosition = Vector2(
-          hitbox.offsetPosition.x + (dir.x * speed) * dt,
-          hitbox.offsetPosition.y + (dir.y * speed) * dt);
-      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
+      position.add((dir * speed) * dt);
+      collider.offsetPosition.add((dir * speed) * dt);
     } else
       timeToRespawn -= dt;
 
-    if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
+    if (collider.offsetPosition.y > screenSize.y + collider.size.y) {
       resetPlane();
     }
 
@@ -96,9 +97,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   @override
   void render(Canvas c) {
     super.render(c);
-    // TODO: Remove this once a proper sprite is in order for the Enemy Plane
-    hitbox.render(c, Paint()..color = Colors.red);
-
+    collider.render(c, Paint()..color = Colors.red);
     particles.render(c);
   }
 
@@ -106,10 +105,10 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void resetPlane() {
     // generates num between 0 and 2
     startingpoint = Random().nextInt(startpoints.length);
-    hitbox.offsetPosition = startpoints[startingpoint];
-
     position =
         Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
+
+    collider.offsetPosition = position;
 
     // Now that the plane has been set up at the top,
     // we will now determine a bottom position
@@ -157,6 +156,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void onCollision(Set<Vector2> points, Collidable other) {
     if (other is Missile) {
       destroyed = true;
+      other.touchedPlane = true;
       resetPlane();
       print("missile was touched :))");
     }
