@@ -1,14 +1,14 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
-import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/game_object.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
-class EnemyPlane extends PositionComponent with Hitbox {
+class EnemyPlane extends GameObjectRectColl {
   // size of hitbox
-  final double bodySize = 40.0;
+  double bodySize = 40.0;
 
   // starting points -- add more if needed
   final List<Vector2> startpoints = [];
@@ -40,12 +40,13 @@ class EnemyPlane extends PositionComponent with Hitbox {
 
   late HealthBar healthbar;
 
-  // plane body
-  HitboxShape body = HitboxRectangle(relation: Vector2(1.0, 1.0));
-
   late TrailParticleSystem particles;
 
-  EnemyPlane(this.screenSize, this.healthbar) {
+  EnemyPlane(this.screenSize, this.healthbar)
+      : super(
+            position: Vector2.zero(),
+            color: Colors.red,
+            size: Vector2(40.0, 40.0)) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
     startpoints.add(Vector2(
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
@@ -63,11 +64,6 @@ class EnemyPlane extends PositionComponent with Hitbox {
       acceleration: 5,
       radius: 10,
     );
-
-    addShape(body);
-
-    body.size = Vector2(bodySize, bodySize);
-    body.component.size = Vector2(bodySize, bodySize);
   }
 
   @override
@@ -76,11 +72,10 @@ class EnemyPlane extends PositionComponent with Hitbox {
 
     if (timeToRespawn <= 0) {
       position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
-      body.offsetPosition = position;
     } else
       timeToRespawn -= dt;
 
-    if (body.offsetPosition.y > screenSize.y + bodySize) {
+    if (collider.position.y > screenSize.y + bodySize) {
       resetPlane();
     }
 
@@ -93,7 +88,7 @@ class EnemyPlane extends PositionComponent with Hitbox {
   void render(Canvas c) {
     super.render(c);
     particles.render(c);
-    body.render(c, Paint()..color = Colors.red);
+    collider.render(c, Paint()..color = Colors.red);
   }
 
   /// Resets Enemy Plane to a New Position
@@ -101,7 +96,7 @@ class EnemyPlane extends PositionComponent with Hitbox {
     // generates num between 1 and 3
     // minus 1 as arrays start at 0, so we get a range of 0 to 2.
     startingpoint = Random().nextInt(startpoints.length);
-    body.offsetPosition = startpoints[startingpoint];
+    collider.offsetPosition = startpoints[startingpoint];
     position = startpoints[startingpoint];
 
     // Now that the plane has been set up at the top,
