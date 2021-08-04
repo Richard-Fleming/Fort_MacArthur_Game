@@ -1,16 +1,11 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
-import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/models/missile.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
-class EnemyPlane extends PositionComponent with Hitbox, Collidable {
-  // plane body
-  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
-
+class EnemyPlane extends PositionComponent {
   // size of hitbox
   final double bodySize = 40.0;
 
@@ -30,20 +25,22 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   // vector of determined end position
   Vector2 bottomPosition = Vector2.zero();
+
   // heading vector
   Vector2 dir = Vector2.zero();
+
   // position used for the particles
   Vector2 position = Vector2.zero();
 
   // speed at which plane approaches end position
-  double speed = 60;
+  double speed = 160;
 
-  // whether this plane has only just spawned or not
   bool initialSpawn = true;
-  // if the plane is destroyed yet
-  bool destroyed = false;
 
   late HealthBar healthbar;
+
+  // plane body
+  late Rect body;
 
   late TrailParticleSystem particles;
 
@@ -53,14 +50,6 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
-
-    collider.offsetPosition = position;
-    collider.angle = angle;
-
-    addShape(collider);
-
-    collider.component.size = Vector2(bodySize, bodySize);
-
     resetPlane();
 
     particles = new TrailParticleSystem(
@@ -80,12 +69,12 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.update(dt);
 
     if (timeToRespawn <= 0) {
-      position.add((dir * speed) * dt);
-      collider.offsetPosition.add((dir * speed) * dt);
+      body = body.translate((dir.x * speed) * dt, (dir.y * speed) * dt);
+      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
     } else
       timeToRespawn -= dt;
 
-    if (collider.offsetPosition.y > screenSize.y + collider.size.y) {
+    if (body.top > screenSize.y + bodySize) {
       resetPlane();
     }
 
@@ -97,21 +86,23 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   @override
   void render(Canvas c) {
     super.render(c);
-    collider.render(c, Paint()..color = Colors.red);
     particles.render(c);
+    c.drawRect(body, Paint()..color = Colors.red);
   }
 
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
-    // generates num between 0 and 2
+    // generates num between 1 and 3
+    // minus 1 as arrays start at 0, so we get a range of 0 to 2.
     startingpoint = Random().nextInt(startpoints.length);
+    body = Rect.fromLTWH(startpoints[startingpoint].x,
+        startpoints[startingpoint].y, bodySize, bodySize);
+
     position =
         Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
 
-    collider.offsetPosition = position;
-
     // Now that the plane has been set up at the top,
-    // we will now determine a bottom position
+    // we will not determine a bottom position
     pickBottomPosition();
 
     // With all info required, now find the normalized path
@@ -120,13 +111,10 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     var random = new Random(); // needed to allow access for static variables
     timeToRespawn = random.nextDouble() * maxTimeBetweenRespawn;
 
-    // only damage the health bar if the plane was not destroyed on this reset
-    // and it isn't the plane's first time spawning in
-    if (!initialSpawn && !destroyed)
+    if (!initialSpawn)
       healthbar.manageHealth(-2);
-    else if (initialSpawn) {
+    else
       initialSpawn = false;
-    }
   }
 
   // Determine the position at the bottom of the screeen
@@ -150,16 +138,6 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // against the chosen starting point
     // in order to gauge the line towards the bottom from the start.
     dir = (bottomPosition - startpoints[startingpoint]).normalized();
-  }
-
-  @override
-  void onCollision(Set<Vector2> points, Collidable other) {
-    if (other is Missile) {
-      destroyed = true;
-      other.touchedPlane = true;
-      resetPlane();
-      print("missile was touched :))");
-    }
   }
 
   void reset() {

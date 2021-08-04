@@ -10,7 +10,7 @@ import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
 
 // main game loop. pan detector necessary for touch detection
-class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
+class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
 
   int enemyCount = 3;
@@ -96,9 +96,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
     missileSystem.update(dt);
     healthbar.update(dt);
 
-    // if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
-    //   overlays.add(GameOverMenu.ID);
-    // }
+    if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
+      overlays.add(GameOverMenu.ID);
+    }
   }
 
   // renders objects to the canvas
