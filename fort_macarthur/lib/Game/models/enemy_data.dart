@@ -7,12 +7,8 @@ class EnemyData {
   // Level of this enemy.
   final int level;
 
-  // Points gains after destroying this enemy.
-  final int killPoint;
-
   const EnemyData({
     required this.speed,
     required this.level,
-    required this.killPoint,
   });
 }

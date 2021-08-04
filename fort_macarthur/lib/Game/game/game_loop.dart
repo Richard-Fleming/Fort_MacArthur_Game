@@ -7,12 +7,11 @@ import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
+import 'knowsGameSize.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
   MissileSystem missileSystem = new MissileSystem();
-
-  int enemyCount = 3;
 
   bool isPressed = false;
   bool isAlreadyLoaded = false;
@@ -31,12 +30,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     // Check as if navigating between menuand gameplay it will be called multiple times
     if (!isAlreadyLoaded) {
       // put image loading, class initialization here
-      healthbar = HealthBar(size.x / 1.5, size.y - 50);
-      add(healthbar);
 
-      for (var i = 0; i < enemyCount; i++) {
-        add(EnemyPlane(size, healthbar));
-      }
       missileSystem.baseInit(size);
     }
   }
@@ -90,11 +84,30 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.update(dt);
     healthbar.update(dt);
 
+    // If true we add gameover overlay
     if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
       overlays.add(GameOverMenu.ID);
     }
 
     // put anything to be updated such here
+  }
+
+  @override
+  void prepare(Component c) {
+    super.prepare(c);
+
+    if (c is KnowsGameSize) {
+      c.onResize(this.size);
+    }
+  }
+
+  @override
+  void onResize(Vector2 canvasSize) {
+    super.onResize(canvasSize);
+
+    this.components.whereType<KnowsGameSize>().forEach((component) {
+      component.onResize(this.size);
+    });
   }
 
   // renders objects to the canvas
@@ -103,15 +116,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.render(canvas);
     ammoManager.draw(canvas);
     healthbar.render(canvas);
-
-    //TODO: Remove this when proper Enemy Manager is implemented.
-
-    textPaint.render(
-      canvas,
-      enemyCount.toString() + ' Enemies That Remain',
-      Vector2(95, 10),
-      anchor: Anchor.topCenter,
-    );
   }
 
   // changes the background color

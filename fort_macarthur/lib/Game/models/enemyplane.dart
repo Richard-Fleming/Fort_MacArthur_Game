@@ -14,9 +14,6 @@ class EnemyPlane extends PositionComponent {
   // the last picked starting point
   int startingpoint = 0;
 
-  // size of the device screen
-  final Vector2 screenSize;
-
   // Time between starting
   double timeToRespawn = 0;
   // Max time that it can take before a plane starts again
@@ -38,19 +35,19 @@ class EnemyPlane extends PositionComponent {
   // plane body
   late Rect body;
 
-  EnemyPlane(this.screenSize, this.healthbar) {
-    startpoints.add(Vector2(bodySize, -60.0)); // left starting point
+  EnemyPlane() {
+/*     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
     startpoints.add(Vector2(
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
-    resetPlane();
+    resetPlane(); */
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-
+/* 
     if (timeToRespawn <= 0)
       body = body.translate((dir.x * speed) * dt, (dir.y * speed) * dt);
     else
@@ -58,7 +55,7 @@ class EnemyPlane extends PositionComponent {
 
     if (body.top > screenSize.y + bodySize) {
       resetPlane();
-    }
+    } */
   }
 
   @override
@@ -95,7 +92,7 @@ class EnemyPlane extends PositionComponent {
   // on X for the plane to move towards
   // Y is always the same value, so it does not need to be determined.
   void pickBottomPosition() {
-    double newPos = Random().nextDouble() * screenSize.x;
+    /* double newPos = Random().nextDouble() * screenSize.x;
 
     if (newPos < screenSize.x / 2) {
       newPos += bodySize / 2;
@@ -103,7 +100,7 @@ class EnemyPlane extends PositionComponent {
       newPos -= bodySize / 2;
     }
 
-    bottomPosition = new Vector2(newPos, screenSize.y);
+    bottomPosition = new Vector2(newPos, screenSize.y); */
   }
 
   // Determines the line towards the end position based on the start position
