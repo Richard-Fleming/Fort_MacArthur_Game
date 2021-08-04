@@ -8,6 +8,7 @@ import 'game_object.dart';
 // reaches it's destination
 class Explosion {
   late GameObjectCircle explosion;
+
   double initialRadius;
   double maxRadius;
   double radiusIncreaseSpeed;
