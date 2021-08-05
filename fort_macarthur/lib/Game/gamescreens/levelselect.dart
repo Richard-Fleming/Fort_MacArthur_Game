@@ -43,6 +43,10 @@ class LevelSelect extends StatelessWidget {
                   }
                 },
                 child: levelOneComplete ? Text('Level One') : Text('LOCKED'),
+                style: levelOneComplete
+                    ? ElevatedButton.styleFrom()
+                    : ElevatedButton.styleFrom(
+                        primary: Colors.grey, onPrimary: Colors.white),
               ),
             ),
 
@@ -60,6 +64,10 @@ class LevelSelect extends StatelessWidget {
                   }
                 },
                 child: levelTwoComplete ? Text('Level Two') : Text('LOCKED'),
+                style: levelTwoComplete
+                    ? ElevatedButton.styleFrom()
+                    : ElevatedButton.styleFrom(
+                        primary: Colors.grey, onPrimary: Colors.white),
               ),
             ),
 
@@ -78,6 +86,10 @@ class LevelSelect extends StatelessWidget {
                 },
                 child:
                     levelThreeComplete ? Text('Level Three') : Text('LOCKED'),
+                style: levelThreeComplete
+                    ? ElevatedButton.styleFrom()
+                    : ElevatedButton.styleFrom(
+                        primary: Colors.grey, onPrimary: Colors.white),
               ),
             ),
 
