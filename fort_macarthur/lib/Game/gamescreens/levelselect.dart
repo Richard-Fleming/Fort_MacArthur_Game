@@ -37,7 +37,8 @@ class LevelSelect extends StatelessWidget {
                   if (levelOneComplete) {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const GamePlay(),
+                        builder: (context) =>
+                            const GamePlay(enteredFromGame: false),
                       ),
                     );
                   }
@@ -58,7 +59,8 @@ class LevelSelect extends StatelessWidget {
                   if (levelTwoComplete) {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const GamePlay(),
+                        builder: (context) =>
+                            const GamePlay(enteredFromGame: false),
                       ),
                     );
                   }
@@ -79,7 +81,8 @@ class LevelSelect extends StatelessWidget {
                   if (levelThreeComplete) {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const GamePlay(),
+                        builder: (context) =>
+                            const GamePlay(enteredFromGame: false),
                       ),
                     );
                   }

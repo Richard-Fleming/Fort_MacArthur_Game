@@ -38,7 +38,8 @@ class MainMenu extends StatelessWidget {
                   // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const GamePlay(),
+                      builder: (context) =>
+                          const GamePlay(enteredFromGame: true),
                     ),
                   );
                 },
