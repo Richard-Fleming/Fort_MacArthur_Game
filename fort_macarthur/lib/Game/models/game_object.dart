@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
+import 'package:fort_macarthur/Game/models/enemyplane.dart';
 
 class GameObjectRect {
   late Rectangle collider;
@@ -48,66 +49,6 @@ class GameObjectRect {
 
   // updates the shape's properties
   void update(double dt) {
-    collider.offsetPosition = this.position;
-    collider.angle = this.angle;
-    collider.size = this.size;
-  }
-
-  // render the shape
-  void render(Canvas canvas) {
-    collider.render(canvas, paint);
-  }
-}
-
-class GameObjectRectColl extends PositionComponent with Hitbox, Collidable {
-  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
-  late Paint paint;
-  Vector2 position;
-  Vector2 size;
-  double angle;
-
-  // generic rectangle shape object. can be rotated, resized, and moved.
-  GameObjectRectColl(
-      {required this.size,
-      required Color color,
-      required this.position,
-      this.angle = 0.0}) {
-    paint = new Paint()..color = color;
-    collider.offsetPosition = position;
-
-    addShape(collider); // adds collider to collision checks
-  }
-
-  void setPosition(Vector2 position) {
-    this.position = position;
-    collider.offsetPosition = position;
-  }
-
-  void setAngle(double angle) {
-    this.angle = angle;
-    collider.angle = angle;
-  }
-
-  void setSize(Vector2 size) {
-    this.size = size;
-    collider.size = size;
-  }
-
-  // calculates angle to face the direction passed.
-  // far from perfect
-  void faceDirection(Vector2 direction) {
-    this.angle = atan2(direction.y, direction.x);
-    collider.angle = this.angle;
-  }
-
-  // returns center of the rectangle
-  Vector2 getCenter() {
-    return Vector2(size.x / 2, size.y / 2);
-  }
-
-  // updates the shape's properties
-  void update(double dt) {
-    super.update(dt);
     collider.offsetPosition = this.position;
     collider.angle = this.angle;
     collider.size = this.size;

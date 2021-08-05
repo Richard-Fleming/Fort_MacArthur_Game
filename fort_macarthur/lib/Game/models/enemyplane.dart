@@ -1,12 +1,12 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
+import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/models/game_object.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
-class EnemyPlane extends GameObjectRectColl {
+class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // size of hitbox
   double bodySize = 40.0;
 
@@ -42,11 +42,10 @@ class EnemyPlane extends GameObjectRectColl {
 
   late TrailParticleSystem particles;
 
+  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
+
   EnemyPlane(this.screenSize, this.healthbar)
-      : super(
-            position: Vector2.zero(),
-            color: Colors.red,
-            size: Vector2(40.0, 40.0)) {
+      : super(position: Vector2.zero(), size: Vector2(40.0, 40.0)) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
     startpoints.add(Vector2(
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
@@ -64,6 +63,8 @@ class EnemyPlane extends GameObjectRectColl {
       acceleration: 5,
       radius: 10,
     );
+
+    addShape(collider);
   }
 
   @override

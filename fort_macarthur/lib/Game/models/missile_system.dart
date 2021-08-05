@@ -141,9 +141,9 @@ class MissileSystem {
       missile.update(dt);
 
       // explosion happens when missile reaches it's destination
-      if (missile.position.y < tap.position.y) {
+      if (missile.collider.offsetPosition.y < tap.position.y) {
         explosions.add(Explosion(
-          position: missile.position + missile.size / 2.0,
+          position: missile.collider.offsetPosition + missile.size / 2.0,
         ));
 
         // create an instance of the explosion particles
