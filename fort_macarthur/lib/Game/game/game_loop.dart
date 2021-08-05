@@ -6,7 +6,7 @@ import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
-import '../models/enemyplane.dart';
+import 'package:fort_macarthur/Game/models/enemyManager.dart';
 import '../models/missile_system.dart';
 import 'knowsGameSize.dart';
 
@@ -17,6 +17,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
+  late EnemyManager _enemyManager;
 
   var ammoManager = new AmmunitionManager();
 
@@ -31,6 +32,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     // Check as if navigating between menuand gameplay it will be called multiple times
     if (!isAlreadyLoaded) {
       // put image loading, class initialization here
+
+      healthbar = HealthBar(size.x / 1.5, size.y - 50);
+      add(healthbar);
+
+      _enemyManager = EnemyManager();
+      add(_enemyManager);
 
       missileSystem.baseInit(size);
     }
@@ -76,9 +83,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   void reset() {
     missileSystem.reset();
 
-    components.whereType<EnemyPlane>().forEach((enemyPlane) {
+    /* components.whereType<EnemyPlane>().forEach((enemyPlane) {
       enemyPlane.remove();
-    });
+    }); */
 
     healthbar.reset();
     ammoManager.reset();
