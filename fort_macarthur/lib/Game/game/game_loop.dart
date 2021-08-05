@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/enemyplane.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
@@ -17,7 +18,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
-  late EnemyManager _enemyManager;
 
   var ammoManager = new AmmunitionManager();
 
@@ -36,8 +36,8 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
       healthbar = HealthBar(size.x / 1.5, size.y - 50);
       add(healthbar);
 
-      _enemyManager = EnemyManager();
-      add(_enemyManager);
+      EnemyPlane enemy =
+          EnemyPlane(enemyPos: viewport.canvasSize / 2 + Vector2(0, 100));
 
       missileSystem.baseInit(size);
     }

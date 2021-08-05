@@ -1,4 +1,4 @@
-import 'dart:math';
+/* import 'dart:math';
 
 import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
@@ -51,9 +51,7 @@ class EnemyManager extends BaseComponent
       /// Gets a random [EnemyData] object from the list.
       final enemyData = _enemyDataList.elementAt(random.nextInt(1));
 
-      EnemyPlane enemy = EnemyPlane(
-        enemyData: enemyData,
-      );
+      
 
       // Makes sure that the enemy sprite is centered.
       enemy.anchor = Anchor.center;
@@ -130,3 +128,4 @@ class EnemyManager extends BaseComponent
     ),
   ];
 }
+ */

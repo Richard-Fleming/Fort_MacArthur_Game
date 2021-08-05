@@ -15,7 +15,7 @@ class EnemyPlane extends PositionComponent with KnowsGameSize {
   final double bodySize = 40.0;
 
   // The data required to create this enemy.
-  final EnemyData enemyData;
+  /* final EnemyData enemyData; */
 
   // heading vector
   Vector2 dir = Vector2.zero();
@@ -41,7 +41,10 @@ class EnemyPlane extends PositionComponent with KnowsGameSize {
 
   late TrailParticleSystem particles;
 
-  EnemyPlane({required this.enemyData}) {
+  EnemyPlane({
+    /* required this.enemyData, */
+    required Vector2? enemyPos,
+  }) {
     resetPlane();
     particles = new TrailParticleSystem(
       parentDirection: -dir,
