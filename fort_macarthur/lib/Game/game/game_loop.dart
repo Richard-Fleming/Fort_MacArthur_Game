@@ -38,6 +38,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
       EnemyPlane enemy =
           EnemyPlane(enemyPos: viewport.canvasSize / 2 + Vector2(0, 100));
+      add(enemy);
 
       missileSystem.baseInit(size);
     }

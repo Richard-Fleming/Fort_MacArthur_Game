@@ -79,6 +79,8 @@ class EnemyPlane extends PositionComponent with KnowsGameSize {
 
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
+    body = Rect.fromLTWH(0, 0, bodySize, bodySize);
+
     if (!initialSpawn)
       healthbar.manageHealth(-2);
     else
