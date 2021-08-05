@@ -84,7 +84,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   //Resets game when navigating between menu and game screens for example
   void reset() {
     missileSystem.reset();
-    SoundManager.releaseAll();
+    SoundManager.stopAll();
 
     components.whereType<EnemyPlane>().forEach((enemyPlane) {
       enemyPlane.remove();

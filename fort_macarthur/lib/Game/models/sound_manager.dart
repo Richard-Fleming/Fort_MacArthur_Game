@@ -1,7 +1,13 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 
 enum SoundFx {
   test,
+  missileLaunch,
+  plane,
+  explosion,
+  uiConfirm,
+  uiCancel,
+  uiLocked
   // put soundfx index here
 }
 
@@ -11,7 +17,7 @@ class SoundManager {
 
   static void init() {
     sounds.add(GameSoundEffect(
-      soundPath: "https://bit.ly/2CH50TO",
+      soundPath: "assets/sounds/explosionSound.wav",
       loop: true,
     ));
   }
@@ -24,17 +30,15 @@ class SoundManager {
     sounds.elementAt(soundIndex.index).pause();
   }
 
-  static void resume(SoundFx soundIndex) {
-    sounds.elementAt(soundIndex.index).resume();
-  }
-
   static void stop(SoundFx soundIndex) {
     sounds.elementAt(soundIndex.index).stop();
   }
 
-  static void releaseAll() {
+  static void stopAll() {
     for (var sound in sounds) {
-      sound.release();
+      if (sound.isPlaying()) {
+        sound.stop();
+      }
     }
   }
 
@@ -51,30 +55,35 @@ class GameSoundEffect {
   String soundPath;
   bool loop;
 
-  GameSoundEffect({required this.soundPath, this.loop = false}) {
+  GameSoundEffect({
+    required this.soundPath,
+    this.loop = false,
+    double volume = 1.0,
+  }) {
+    player.setAsset(soundPath);
+    player.setVolume(volume);
+
     if (loop) {
-      player.setReleaseMode(ReleaseMode.LOOP);
+      player.setLoopMode(LoopMode.all);
+    } else {
+      player.setLoopMode(LoopMode.off);
     }
   }
 
-  void play({double volume = 1.0}) {
-    player.play(soundPath, volume: volume);
+  bool isPlaying() {
+    return player.playing;
+  }
+
+  void play() {
+    player.play();
   }
 
   void pause() {
     player.pause();
   }
 
-  void resume() {
-    player.resume();
-  }
-
   void stop() {
     player.stop();
-  }
-
-  void release() {
-    player.release();
   }
 
   void dispose() {

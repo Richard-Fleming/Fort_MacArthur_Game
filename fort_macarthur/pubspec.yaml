@@ -30,7 +30,7 @@ dependencies:
   panorama: ^0.4.0
   url_launcher: ^6.0.3
   flame: ^1.0.0-releasecandidate.13
-  audioplayers: ^0.19.1
+  just_audio: ^0.9.5
 
 dev_dependencies:
   flutter_test:
@@ -55,3 +55,4 @@ flutter:
     - assets/images/quiz/
     - assets/logo/
     - assets/Quiz/
+    - assets/sounds/
