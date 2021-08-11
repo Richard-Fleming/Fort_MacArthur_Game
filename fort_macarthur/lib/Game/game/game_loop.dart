@@ -100,10 +100,17 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   // updates game
   void update(double dt) {
     super.update(dt);
+
+    if (missileSystem.wasLaunched) {
+      ammoManager.decreaseAmmo(1);
+      missileSystem.wasLaunched = false;
+    }
+
     missileSystem.update(dt);
     healthbar.update(dt);
 
-    if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
+    if (healthbar.getHealth() == 0 ||
+        (ammoManager.ammo == 0 && !missileSystem.missileLaunched)) {
       overlays.add(GameOverMenu.ID);
     }
   }
