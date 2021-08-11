@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 
 import 'gameplay.dart';
 import 'options.dart';
@@ -33,6 +34,7 @@ class MainMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.init();
                   // Push and replace current screen (i.e MainMenu) with
                   // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
@@ -65,6 +67,7 @@ class MainMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.disposeAll();
                   SystemNavigator.pop();
                 },
                 child: Text('Exit'),

@@ -1,7 +1,6 @@
 import 'package:just_audio/just_audio.dart';
 
 enum SoundFx {
-  test,
   missileLaunch,
   plane,
   explosion,
@@ -16,9 +15,21 @@ class SoundManager {
   static List<GameSoundEffect> sounds = [];
 
   static void init() {
+    // missile launch sound
+    sounds.add(GameSoundEffect(
+      soundPath: "assets/sounds/missileLaunchSound.wav",
+    ));
+
+    // // plane movement sound
+    sounds.add(GameSoundEffect(
+      soundPath: "assets/sounds/planeSound.wav",
+      loop: true,
+    ));
+
+    // explosion sound
     sounds.add(GameSoundEffect(
       soundPath: "assets/sounds/explosionSound.wav",
-      loop: true,
+      // loop: true,
     ));
   }
 
@@ -64,7 +75,7 @@ class GameSoundEffect {
     player.setVolume(volume);
 
     if (loop) {
-      player.setLoopMode(LoopMode.all);
+      player.setLoopMode(LoopMode.one);
     } else {
       player.setLoopMode(LoopMode.off);
     }
@@ -73,6 +84,10 @@ class GameSoundEffect {
   bool isPlaying() {
     return player.playing;
   }
+
+  // bool reachedEnd() {
+  //   return player.position.inSeconds >= player.duration!.inSeconds;
+  // }
 
   void play() {
     player.play();
@@ -84,6 +99,7 @@ class GameSoundEffect {
 
   void stop() {
     player.stop();
+    player.seek(Duration.zero);
   }
 
   void dispose() {

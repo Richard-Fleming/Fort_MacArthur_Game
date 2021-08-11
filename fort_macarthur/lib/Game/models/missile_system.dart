@@ -163,6 +163,7 @@ class MissileSystem {
 
         missile.setPosition(base.position + base.getCenter());
         missile.clearParticles();
+        missile.resetSoundBool();
         missileLaunched = false;
         isPressed = false;
       }

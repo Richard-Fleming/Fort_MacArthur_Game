@@ -40,8 +40,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
         add(EnemyPlane(size, healthbar));
       }
       missileSystem.baseInit(size);
-      SoundManager.init();
-      SoundManager.play(SoundFx.test);
     }
   }
 
