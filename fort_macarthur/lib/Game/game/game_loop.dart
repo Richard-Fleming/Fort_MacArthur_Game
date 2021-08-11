@@ -8,6 +8,7 @@ import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
+import '../models/upgrades.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector {
@@ -39,6 +40,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
         add(EnemyPlane(size, healthbar));
       }
       missileSystem.baseInit(size);
+
+      ammoManager.ammo += finalTallyAmmo;
+      healthbar.upgradeHealth(finalTallyHealth);
+
+      print(finalTallyAmmo);
+      print(finalTallyHealth);
     }
   }
 
