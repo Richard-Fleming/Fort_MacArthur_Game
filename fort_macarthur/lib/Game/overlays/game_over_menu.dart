@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
+import '../gamescreens/quizMenu.dart';
 import '../game/game_loop.dart';
 
 class GameOverMenu extends StatelessWidget {
@@ -29,6 +30,19 @@ class GameOverMenu extends StatelessWidget {
               Text(
                 'Game Over',
                 style: TextStyle(fontSize: 30.0, color: Colors.white),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 3,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const QuizMenu(),
+                      ),
+                    );
+                  },
+                  child: Text('Play Quiz'),
+                ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
