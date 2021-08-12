@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 class HealthBar extends PositionComponent {
   static const int MAX_OPAQUE = 255;
 
-  static const maxHealth = 10.0;
+  static const defaultMaxHealth = 10.0;
+  static double maxHealth = defaultMaxHealth;
   static const int fadeRate = 10;
   static double health = 10.0;
   static int currentFade = 255;
@@ -54,6 +55,13 @@ class HealthBar extends PositionComponent {
 
   void setFade(bool isFading) {
     fade = isFading;
+  }
+
+  void upgradeHealth(int amount) {
+    health += amount;
+    maxHealth = defaultMaxHealth + amount;
+
+    if (health > maxHealth) health = maxHealth;
   }
 
   /// Adjust Health based on amount passed in.

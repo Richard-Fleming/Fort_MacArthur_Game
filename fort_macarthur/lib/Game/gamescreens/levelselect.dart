@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'gameplay.dart';
 import 'mainmenu.dart';
+import '../models/upgrades.dart';
 
 // Represents the main menu screen of Spacescape, allowing
 // players to start the game or modify in-game settings.
 class LevelSelect extends StatelessWidget {
   const LevelSelect({Key? key}) : super(key: key);
   final bool levelOneComplete = true;
-  final bool levelTwoComplete = false;
-  final bool levelThreeComplete = false;
+  final bool levelTwoComplete = true;
+  final bool levelThreeComplete = true;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +58,7 @@ class LevelSelect extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (levelTwoComplete) {
+                    pickedLevelTwo(); // update upgrades.dart globals
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) =>
@@ -79,6 +81,7 @@ class LevelSelect extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (levelThreeComplete) {
+                    pickedLevelThree(); // update upgrades.dart globals
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) =>
