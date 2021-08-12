@@ -43,9 +43,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
       ammoManager.ammo += finalTallyAmmo;
       healthbar.upgradeHealth(finalTallyHealth);
-
-      print(finalTallyAmmo);
-      print(finalTallyHealth);
     }
   }
 
@@ -72,16 +69,22 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   // drag motion started
   void onPanStart(DragStartInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.setupDestination(details);
   }
 
   // continued touch dragging movement
   void onPanUpdate(DragUpdateInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.moveDestination(details);
   }
 
   // when the touch ends
   void onPanEnd(DragEndInfo details) {
+    isPressed = false;
+    healthbar.setFade(isPressed);
     missileSystem.launchMissile();
   }
 

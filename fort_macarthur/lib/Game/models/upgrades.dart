@@ -5,6 +5,7 @@ int finalTallyHealth = 0;
 
 void pickedLevelTwo() {
   finalTallyAmmo = 5;
+  finalTallyHealth = 0;
 }
 
 void pickedLevelThree() {
