@@ -55,6 +55,7 @@ class MainMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.play(SoundFx.uiConfirm);
                   // Push and replace current screen (i.e MainMenu) with
                   // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
