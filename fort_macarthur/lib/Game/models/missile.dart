@@ -17,6 +17,10 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   bool touchedPlane = false;
   late TrailParticleSystem particles;
 
+  GameSoundEffect missileSound = new GameSoundEffect(
+    soundPath: "assets/sounds/missileSound.wav",
+  );
+
   bool playSoundOnce = true;
 
   Missile(
@@ -57,13 +61,13 @@ class Missile extends PositionComponent with Hitbox, Collidable {
 
   void playLaunchSound() {
     if (playSoundOnce) {
-      SoundManager.play(SoundFx.missileLaunch);
+      missileSound.play();
       playSoundOnce = false;
     }
   }
 
   void resetSoundBool() {
-    SoundManager.stop(SoundFx.missileLaunch);
+    missileSound.stop();
     playSoundOnce = true;
   }
 

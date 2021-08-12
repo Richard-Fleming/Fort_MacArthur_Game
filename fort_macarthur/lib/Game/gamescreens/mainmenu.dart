@@ -9,9 +9,10 @@ import 'options.dart';
 // players to start the game or modify in-game settings.
 class MainMenu extends StatelessWidget {
   const MainMenu({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    SoundManager.init();
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -34,9 +35,9 @@ class MainMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
-                  SoundManager.init();
                   // Push and replace current screen (i.e MainMenu) with
                   // SelectSpaceship(), so that player can select a spaceship.
+                  SoundManager.play(SoundFx.uiConfirm);
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => const GamePlay(),
@@ -52,6 +53,8 @@ class MainMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.play(SoundFx.uiConfirm);
+
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => const Options(),
@@ -67,6 +70,8 @@ class MainMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.play(SoundFx.uiCancel);
+
                   SoundManager.disposeAll();
                   SystemNavigator.pop();
                 },

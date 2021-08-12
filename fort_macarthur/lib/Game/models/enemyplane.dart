@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/models/missile.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
@@ -41,6 +42,14 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   bool destroyed = false;
 
   late HealthBar healthbar;
+
+  GameSoundEffect planeSound = new GameSoundEffect(
+    soundPath: "assets/sounds/planeSound.wav",
+    loop: true,
+    volume: 0.8,
+  );
+
+  bool playSoundOnce = true;
 
   // plane body
   HitboxShape hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
@@ -81,10 +90,12 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
           hitbox.offsetPosition.x + (dir.x * speed) * dt,
           hitbox.offsetPosition.y + (dir.y * speed) * dt);
       position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
+      planeSound.play();
     } else
       timeToRespawn -= dt;
 
     if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
+      planeSound.stop();
       resetPlane();
     }
 
@@ -165,5 +176,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void reset() {
     timeToRespawn = 0;
     resetPlane();
+  }
+
+  void stopSound() {
+    planeSound.stop();
   }
 }

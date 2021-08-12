@@ -1,40 +1,37 @@
 import 'package:just_audio/just_audio.dart';
 
+// for ui sounds only
 enum SoundFx {
-  missileLaunch,
-  plane,
-  explosion,
   uiConfirm,
   uiCancel,
   uiLocked
   // put soundfx index here
 }
 
+// ui sound manager
 class SoundManager {
   // all sound effects of the game
   static List<GameSoundEffect> sounds = [];
 
   static void init() {
-    // missile launch sound
+    // ui confirm sound
     sounds.add(GameSoundEffect(
-      soundPath: "assets/sounds/missileLaunchSound.wav",
+      soundPath: "assets/sounds/uiConfirmSound.wav",
     ));
 
-    // // plane movement sound
+    // ui cancel sound
     sounds.add(GameSoundEffect(
-      soundPath: "assets/sounds/planeSound.wav",
-      loop: true,
+      soundPath: "assets/sounds/uiCancelSound.wav",
     ));
 
-    // explosion sound
+    // ui locked sound
     sounds.add(GameSoundEffect(
-      soundPath: "assets/sounds/explosionSound.wav",
-      // loop: true,
+      soundPath: "assets/sounds/uiLockedSound.wav",
     ));
   }
 
   static void play(SoundFx soundIndex) {
-    sounds.elementAt(soundIndex.index).play();
+    sounds.elementAt(soundIndex.index).playUi();
   }
 
   static void pause(SoundFx soundIndex) {
@@ -91,6 +88,12 @@ class GameSoundEffect {
 
   void play() {
     player.play();
+  }
+
+  // if the sound is a UI sound, use this
+  void playUi() async {
+    await player.play();
+    stop();
   }
 
   void pause() {

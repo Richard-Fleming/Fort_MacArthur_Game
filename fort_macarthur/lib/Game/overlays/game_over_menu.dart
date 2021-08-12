@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import '../game/game_loop.dart';
 
 class GameOverMenu extends StatelessWidget {
@@ -41,6 +42,8 @@ class GameOverMenu extends StatelessWidget {
                           style: TextStyle(fontSize: 10.0),
                         ),
                         onPressed: () {
+                          SoundManager.play(SoundFx.uiConfirm);
+
                           gameRef.reset();
                           gameRef.overlays.remove(GameOverMenu.ID);
                           // Push and replace current screen (i.e MainMenu) with
@@ -58,6 +61,9 @@ class GameOverMenu extends StatelessWidget {
                           style: TextStyle(fontSize: 10.0),
                         ),
                         onPressed: () {
+                          SoundManager.play(SoundFx.uiCancel);
+                          SoundManager.disposeAll();
+
                           gameRef.overlays.remove(GameOverMenu.ID);
                           SystemNavigator.pop();
                         },

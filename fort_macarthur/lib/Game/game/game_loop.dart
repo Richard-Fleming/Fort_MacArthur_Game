@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
@@ -82,9 +81,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   //Resets game when navigating between menu and game screens for example
   void reset() {
     missileSystem.reset();
-    SoundManager.stopAll();
 
     components.whereType<EnemyPlane>().forEach((enemyPlane) {
+      enemyPlane.stopSound();
       enemyPlane.remove();
     });
 
