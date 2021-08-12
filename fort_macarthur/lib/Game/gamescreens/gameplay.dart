@@ -14,7 +14,9 @@ GameLoop _missileGame = GameLoop();
 // This class represents the actual game screen
 // where all the action happens.
 class GamePlay extends StatelessWidget {
-  const GamePlay({Key? key}) : super(key: key);
+  final bool enteredFromGame;
+
+  const GamePlay({Key? key, required this.enteredFromGame}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class GamePlay extends StatelessWidget {
             GameOverMenu.ID: (BuildContext context, GameLoop gameRef) =>
                 GameOverMenu(
                   gameRef: gameRef,
+                  enteredFromGame: enteredFromGame,
                 ),
           },
         ),

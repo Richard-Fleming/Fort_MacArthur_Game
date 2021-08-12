@@ -31,6 +31,7 @@ class MissileSystem {
   bool explosionTriggered = false;
   bool explosionVisible = false;
   bool isPressed = false;
+  bool wasLaunched = false;
 
   Paint whiteBox = new Paint()..color = Color(0xFFFFFFFF);
 
@@ -124,6 +125,7 @@ class MissileSystem {
     // checks if missile destination is not under the base
     if (isPressed && !missileLaunched && tap.position.y < base.position.y) {
       missileLaunched = true;
+      wasLaunched = true;
       isPressed = true;
     } else {
       isPressed = false;
