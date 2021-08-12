@@ -8,6 +8,7 @@ import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
+import '../models/upgrades.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
@@ -39,6 +40,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
         add(EnemyPlane(size, healthbar));
       }
       missileSystem.baseInit(size);
+
+      ammoManager.ammo += finalTallyAmmo;
+      healthbar.upgradeHealth(finalTallyHealth);
     }
   }
 
@@ -65,16 +69,22 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
 
   // drag motion started
   void onPanStart(DragStartInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.setupDestination(details);
   }
 
   // continued touch dragging movement
   void onPanUpdate(DragUpdateInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.moveDestination(details);
   }
 
   // when the touch ends
   void onPanEnd(DragEndInfo details) {
+    isPressed = false;
+    healthbar.setFade(isPressed);
     missileSystem.launchMissile();
   }
 
@@ -94,10 +104,17 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   // updates game
   void update(double dt) {
     super.update(dt);
+
+    if (missileSystem.wasLaunched) {
+      ammoManager.decreaseAmmo(1);
+      missileSystem.wasLaunched = false;
+    }
+
     missileSystem.update(dt);
     healthbar.update(dt);
 
-    if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
+    if (healthbar.getHealth() == 0 ||
+        (ammoManager.ammo == 0 && !missileSystem.missileLaunched)) {
       overlays.add(GameOverMenu.ID);
     }
   }
