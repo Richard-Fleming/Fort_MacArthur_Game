@@ -4,6 +4,8 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
+import 'package:fort_macarthur/Game/models/healthbar.dart';
+import '../models/enemyplane.dart';
 
 class GameObjectRect extends PositionComponent {
   late Rectangle collider;
@@ -105,7 +107,8 @@ class GameObjectCircle {
   }
 }
 
-class GameObjectCollRect extends PositionComponent {
+class EnemyPlaneColl extends PositionComponent with Hitbox, Collidable {
+  late EnemyPlane plane;
   HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
   late Paint paint;
   Vector2 position;
@@ -113,15 +116,18 @@ class GameObjectCollRect extends PositionComponent {
   double angle;
 
   // generic rectangle shape object. can be rotated, resized, and moved.
-  GameObjectCollRect(
+  EnemyPlaneColl(
       {required this.size,
       required Color color,
       required this.position,
-      this.angle = 0.0}) {
+      this.angle = 0.0,
+      required HealthBar healthBar,
+      required Vector2 screenSize}) {
     paint = new Paint()..color = color;
     collider.offsetPosition = position;
     collider.size = size;
     collider.position = position;
+    plane = new EnemyPlane(screenSize, healthBar);
   }
 
   void setPosition(Vector2 position) {
