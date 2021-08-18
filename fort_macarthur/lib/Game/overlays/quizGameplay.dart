@@ -8,7 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
 
 import '../../device.dart';
-import '../../resultpages.dart';
+import 'quiz_Results.dart';
 
 class GetJson extends StatelessWidget {
   // accept the langname as a parameter
@@ -172,7 +172,7 @@ class _QuizGameplayState extends State<QuizGameplay> {
         print("The question number is:  $j and the index value of this is $i");
       } else {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => ResultPage(marks: marks),
+          builder: (context) => QuizResults(marks: marks, gameRef: gameRef),
         ));
       }
       btncolor["a"] = Colors.indigoAccent;

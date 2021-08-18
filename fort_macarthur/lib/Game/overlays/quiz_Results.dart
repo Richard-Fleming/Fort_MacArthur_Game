@@ -3,16 +3,16 @@ import 'package:fort_macarthur/Game/GameScreens/mainmenu.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
 import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 
-class ResultPage extends StatefulWidget {
+class QuizResults extends StatefulWidget {
   int marks;
   final GameLoop gameRef;
-  ResultPage({Key? key, required this.marks, required this.gameRef})
+  QuizResults({Key? key, required this.marks, required this.gameRef})
       : super(key: key);
   @override
-  _ResultPageState createState() => _ResultPageState(marks, gameRef);
+  _QuizResultsState createState() => _QuizResultsState(marks, gameRef);
 }
 
-class _ResultPageState extends State<ResultPage> {
+class _QuizResultsState extends State<QuizResults> {
   List<String> images = [
     "assets/images/quiz/perfect.png",
     "assets/images/quiz/good.png",
@@ -38,9 +38,9 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   int marks;
-
   final GameLoop gameRef;
-  _ResultPageState(this.marks, this.gameRef);
+
+  _QuizResultsState(this.marks, this.gameRef);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
