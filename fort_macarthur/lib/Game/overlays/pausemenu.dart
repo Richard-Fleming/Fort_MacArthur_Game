@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/Game/overlays/pausebutton.dart';
 import '../game/game_loop.dart';
 
@@ -31,6 +32,8 @@ class PauseMenu extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             child: ElevatedButton(
               onPressed: () {
+                SoundManager.play(SoundFx.uiConfirm);
+
                 gameRef.resumeEngine();
                 gameRef.overlays.remove(PauseMenu.ID);
                 gameRef.overlays.add(PauseButton.ID);
@@ -44,6 +47,8 @@ class PauseMenu extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             child: ElevatedButton(
               onPressed: () {
+                SoundManager.play(SoundFx.uiCancel);
+
                 gameRef.overlays.remove(PauseMenu.ID);
                 gameRef.reset();
                 Navigator.of(context).pushReplacement(

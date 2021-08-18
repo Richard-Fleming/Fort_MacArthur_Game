@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
@@ -40,6 +41,17 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   late HealthBar healthbar;
 
+  GameSoundEffect planeSound = new GameSoundEffect(
+    soundPath: "assets/sounds/planeSound.wav",
+    loop: true,
+    volume: 0.8,
+  );
+
+  bool playSoundOnce = true;
+
+  // plane body
+  HitboxShape hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
+
   late TrailParticleSystem particles;
 
   HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
@@ -73,10 +85,12 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
     if (timeToRespawn <= 0) {
       position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
+      planeSound.play();
     } else
       timeToRespawn -= dt;
 
-    if (collider.position.y > screenSize.y + bodySize) {
+    if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
+      planeSound.stop();
       resetPlane();
     }
 
@@ -90,6 +104,29 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.render(c);
     particles.render(c);
     collider.render(c, Paint()..color = Colors.red);
+  }
+
+  // Determine the position at the bottom of the screeen
+  // on X for the plane to move towards
+  // Y is always the same value, so it does not need to be determined.
+  void pickBottomPosition() {
+    double newPos = Random().nextDouble() * screenSize.x;
+
+    if (newPos < screenSize.x / 2) {
+      newPos += bodySize / 2;
+    } else if (newPos > screenSize.x / 2) {
+      newPos -= bodySize / 2;
+    }
+
+    bottomPosition = new Vector2(newPos, screenSize.y);
+  }
+
+  // Determines the line towards the end position based on the start position
+  void determinePath() {
+    // Use the newly determined bottom point
+    // against the chosen starting point
+    // in order to gauge the line towards the bottom from the start.
+    dir = (bottomPosition - startpoints[startingpoint]).normalized();
   }
 
   /// Resets Enemy Plane to a New Position
@@ -116,31 +153,12 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
       initialSpawn = false;
   }
 
-  // Determine the position at the bottom of the screeen
-  // on X for the plane to move towards
-  // Y is always the same value, so it does not need to be determined.
-  void pickBottomPosition() {
-    double newPos = Random().nextDouble() * screenSize.x;
-
-    if (newPos < screenSize.x / 2) {
-      newPos += bodySize / 2;
-    } else if (newPos > screenSize.x / 2) {
-      newPos -= bodySize / 2;
-    }
-
-    bottomPosition = new Vector2(newPos, screenSize.y);
-  }
-
-  // Determines the line towards the end position based on the start position
-  void determinePath() {
-    // Use the newly determined bottom point
-    // against the chosen starting point
-    // in order to gauge the line towards the bottom from the start.
-    dir = (bottomPosition - startpoints[startingpoint]).normalized();
-  }
-
   void reset() {
     timeToRespawn = 0;
     resetPlane();
+  }
+
+  void stopSound() {
+    planeSound.stop();
   }
 }

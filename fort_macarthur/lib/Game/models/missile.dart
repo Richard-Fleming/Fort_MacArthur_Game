@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:fort_macarthur/Game/models/enemyplane.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 
 // class that handles the missile bounding box that is moving towards
@@ -14,6 +15,12 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   double missileSpeed;
   late TrailParticleSystem particles;
   HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
+
+  GameSoundEffect missileSound = new GameSoundEffect(
+    soundPath: "assets/sounds/missileSound.wav",
+  );
+
+  bool playSoundOnce = true;
 
   Missile(
       {required Vector2 size,
@@ -43,6 +50,18 @@ class Missile extends PositionComponent with Hitbox, Collidable {
     collider.offsetPosition = position - size / 2.0;
   }
 
+  void playLaunchSound() {
+    if (playSoundOnce) {
+      missileSound.play();
+      playSoundOnce = false;
+    }
+  }
+
+  void resetSoundBool() {
+    missileSound.stop();
+    playSoundOnce = true;
+  }
+
   Vector2 get position {
     return collider.offsetPosition;
   }
@@ -59,6 +78,8 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   // moves the missile in it's direction
   // ignore: must_call_super
   void update(double dt) {
+    super.update(dt);
+    playLaunchSound();
     collider.offsetPosition.add(missileDirection * missileSpeed * dt);
     particles.updatePosition(collider.offsetPosition + size);
     particles.updateDirection(missileDirection);
@@ -76,7 +97,7 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   void onCollision(Set<Vector2> points, Collidable other) {
     if (other is EnemyPlane) {
       print("missile hit plane from base :)");
-      other.reset();
+      //other.reset();
     }
   }
 }
