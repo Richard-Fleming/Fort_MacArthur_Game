@@ -19,7 +19,7 @@ class QuizGameplay extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 50.0),
               child: Text(
-                'Insert Question',
+                'Insert Question' + QuizData,
                 style: TextStyle(
                   fontSize: 50.0,
                   color: Colors.black,
