@@ -39,6 +39,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
       for (var i = 0; i < enemyCount; i++) {
         add(EnemyPlane(size, healthbar));
       }
+
       missileSystem.baseInit(size);
 
       ammoManager.ammo += finalTallyAmmo;
