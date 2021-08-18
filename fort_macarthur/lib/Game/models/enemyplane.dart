@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/missile.dart';
 import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
@@ -9,7 +10,7 @@ import 'healthbar.dart';
 
 class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // size of hitbox
-  double bodySize = 40.0;
+  final double bodySize = 40.0;
 
   // starting points -- add more if needed
   final List<Vector2> startpoints = [];
@@ -38,6 +39,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   double speed = 160;
 
   bool initialSpawn = true;
+  bool destroyed = false;
 
   late HealthBar healthbar;
 
@@ -54,15 +56,17 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   late TrailParticleSystem particles;
 
-  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
-
-  EnemyPlane(this.screenSize, this.healthbar)
-      : super(position: Vector2.zero(), size: Vector2(40.0, 40.0)) {
+  EnemyPlane(this.screenSize, this.healthbar) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
     startpoints.add(Vector2(
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
+
+    hitbox.size = Vector2(bodySize, bodySize);
+    hitbox.offsetPosition = startpoints[0];
+    addShape(hitbox);
+
     resetPlane();
 
     particles = new TrailParticleSystem(
@@ -75,8 +79,6 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
       acceleration: 5,
       radius: 10,
     );
-
-    addShape(collider);
   }
 
   @override
@@ -84,6 +86,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.update(dt);
 
     if (timeToRespawn <= 0) {
+      hitbox.offsetPosition = Vector2(
+          hitbox.offsetPosition.x + (dir.x * speed) * dt,
+          hitbox.offsetPosition.y + (dir.y * speed) * dt);
       position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
       planeSound.play();
     } else
@@ -102,8 +107,38 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   @override
   void render(Canvas c) {
     super.render(c);
+    // TODO: Remove this once a proper sprite is in order for the Enemy Plane
+    hitbox.render(c, Paint()..color = Colors.red);
+
     particles.render(c);
-    collider.render(c, Paint()..color = Colors.red);
+  }
+
+  /// Resets Enemy Plane to a New Position
+  void resetPlane() {
+    // generates num between 0 and 2
+    startingpoint = Random().nextInt(startpoints.length);
+    hitbox.offsetPosition = startpoints[startingpoint];
+
+    position =
+        Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
+
+    // Now that the plane has been set up at the top,
+    // we will now determine a bottom position
+    pickBottomPosition();
+
+    // With all info required, now find the normalized path
+    determinePath();
+
+    var random = new Random(); // needed to allow access for static variables
+    timeToRespawn = random.nextDouble() * maxTimeBetweenRespawn;
+
+    // only damage the health bar if the plane was not destroyed on this reset
+    // and it isn't the plane's first time spawning in
+    if (!initialSpawn && !destroyed)
+      healthbar.manageHealth(-2);
+    else if (initialSpawn) {
+      initialSpawn = false;
+    }
   }
 
   // Determine the position at the bottom of the screeen
@@ -129,28 +164,13 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     dir = (bottomPosition - startpoints[startingpoint]).normalized();
   }
 
-  /// Resets Enemy Plane to a New Position
-  void resetPlane() {
-    // generates num between 1 and 3
-    // minus 1 as arrays start at 0, so we get a range of 0 to 2.
-    startingpoint = Random().nextInt(startpoints.length);
-    collider.offsetPosition = startpoints[startingpoint];
-    position = startpoints[startingpoint];
-
-    // Now that the plane has been set up at the top,
-    // we will not determine a bottom position
-    pickBottomPosition();
-
-    // With all info required, now find the normalized path
-    determinePath();
-
-    var random = new Random(); // needed to allow access for static variables
-    timeToRespawn = random.nextDouble() * maxTimeBetweenRespawn;
-
-    if (!initialSpawn)
-      healthbar.manageHealth(-2);
-    else
-      initialSpawn = false;
+  @override
+  void onCollision(Set<Vector2> points, Collidable other) {
+    if (other is Missile) {
+      destroyed = true;
+      resetPlane();
+      print("missile was touched :))");
+    }
   }
 
   void reset() {
