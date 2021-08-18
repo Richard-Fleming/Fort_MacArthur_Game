@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../device.dart';
 
 import 'mainmenu.dart';
 

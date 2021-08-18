@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import 'gameplay.dart';
+import '../GameScreens/gameplay.dart';
+import '../game/game_loop.dart';
 import 'quizGameplay.dart';
 
 // Represents the main menu screen of Spacescape, allowing
 // players to start the game or modify in-game settings.
 class QuizMenu extends StatelessWidget {
-  const QuizMenu({Key? key}) : super(key: key);
+  static const String ID = 'Quiz';
+  final GameLoop gameRef;
+  final String quizData = "Battery Osgood - Farley";
+
+  const QuizMenu({Key? key, required this.gameRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +41,7 @@ class QuizMenu extends StatelessWidget {
                   // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const QuizGameplay(),
+                      builder: (context) => GetJson(quizData, gameRef),
                     ),
                   );
                 },

@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
-import 'package:fort_macarthur/Game/gamescreens/quizMenu.dart';
+import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
@@ -94,7 +94,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.update(dt);
     healthbar.update(dt);
     if (healthbar.getHealth() == 0 || ammoManager.getAmmo() == 0) {
-      overlays.add(GameOverMenu.ID);
+      overlays.add(QuizMenu.ID);
     }
   }
 
