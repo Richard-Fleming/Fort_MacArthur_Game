@@ -22,6 +22,11 @@ class _QuizResultsState extends State<QuizResults> {
   late String message;
   late String image;
 
+  // use this when adding special abilities
+  String getMark() {
+    return marks.toString();
+  }
+
   @override
   void initState() {
     if (marks < 20) {

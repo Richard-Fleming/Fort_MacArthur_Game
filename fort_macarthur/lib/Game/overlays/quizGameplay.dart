@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
+import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
+import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 
 import '../../device.dart';
 import 'quiz_Results.dart';
@@ -258,14 +260,26 @@ class _QuizGameplayState extends State<QuizGameplay> {
                   title: Text(
                     "Quizstar",
                   ),
-                  content: Text("You Can't Go Back At This Stage."),
+                  content: Text("You sure you want to quit?."),
                   actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        gameRef.reset();
+                        gameRef.overlays.remove(QuizMenu.ID);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const MainMenu(),
+                        ));
+                      },
+                      child: Text(
+                        'Yes',
+                      ),
+                    ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                       child: Text(
-                        'Ok',
+                        'No ',
                       ),
                     )
                   ],

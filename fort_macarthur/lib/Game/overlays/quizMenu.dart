@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
 
 import '../GameScreens/gameplay.dart';
 import '../game/game_loop.dart';
@@ -56,7 +57,7 @@ class QuizMenu extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const GamePlay(),
+                      builder: (context) => const MainMenu(),
                     ),
                   );
                 },
