@@ -184,6 +184,14 @@ class _QuizGameplayState extends State<QuizGameplay> {
     starttimer();
   }
 
+  String getTime() {
+    return timer.toString();
+  }
+
+  int getMarks() {
+    return marks;
+  }
+
   void checkanswer(String k) {
     // in the previous version this was
     // mydata[2]["1"] == mydata[1]["1"][k]
@@ -275,6 +283,22 @@ class _QuizGameplayState extends State<QuizGameplay> {
             ),
             Column(
               children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(15.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Time: " + getTime(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontFamily: "Quando",
+                      ),
+                    ),
+                  ),
+                ),
                 Expanded(
                   flex: 3,
                   child: Container(
