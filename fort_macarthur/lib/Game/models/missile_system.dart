@@ -62,7 +62,7 @@ class MissileSystem {
       position: Vector2((displaySize.x / 2) - 30, displaySize.y - 30),
     );
 
-    lineStart = base.position + base.center();
+    lineStart = base.position + base.getCenter();
   }
 
   // launches missile on tap
@@ -72,8 +72,8 @@ class MissileSystem {
 
       tap.setPosition(
           Vector2(event.eventPosition.game.x, event.eventPosition.game.y) -
-              tap.center());
-      missile.setPosition(base.position + base.center());
+              tap.getCenter());
+      missile.setPosition(base.position + base.getCenter());
 
       // missile direction calculations
       missile.missileDirection = ((tap.position - missile.size / 4.0) -
@@ -90,8 +90,8 @@ class MissileSystem {
       isPressed = true;
       tap.setPosition(
           Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
-              tap.center());
-      missile.setPosition(base.position + base.center());
+              tap.getCenter());
+      missile.setPosition(base.position + base.getCenter());
 
       // missile direction calculations
       missile.missileDirection = ((tap.position - missile.size / 4.0) -
@@ -108,8 +108,8 @@ class MissileSystem {
       isPressed = true;
       tap.setPosition(
           Vector2(details.eventPosition.game.x, details.eventPosition.game.y) -
-              tap.center());
-      missile.setPosition(base.position + base.center());
+              tap.getCenter());
+      missile.setPosition(base.position + base.getCenter());
 
       // missile direction calculations
       missile.missileDirection = ((tap.position - missile.size / 4.0) -
@@ -143,7 +143,7 @@ class MissileSystem {
       missile.update(dt);
 
       // explosion happens when missile reaches it's destination
-      if (missile.position.y < tap.position.y) {
+      if (missile.position.y < tap.position.y || missile.touchedPlane) {
         explosions.add(Explosion(
           position: missile.position + missile.size / 2.0,
         ));
@@ -163,8 +163,9 @@ class MissileSystem {
           radius: 15,
         ));
 
-        missile.setPosition(base.position + base.center());
+        missile.setPosition(base.position + base.getCenter());
         missile.clearParticles();
+        missile.resetSoundBool();
         missileLaunched = false;
         isPressed = false;
       }
@@ -192,7 +193,7 @@ class MissileSystem {
     if (isPressed || missileLaunched) {
       tap.render(canvas);
       canvas.drawLine(lineStart.toOffset(),
-          (tap.position + tap.center()).toOffset(), whiteBox);
+          (tap.position + tap.getCenter()).toOffset(), whiteBox);
     }
 
     for (Explosion explosion in explosions) {

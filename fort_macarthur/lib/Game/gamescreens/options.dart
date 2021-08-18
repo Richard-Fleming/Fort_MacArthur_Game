@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import '../../device.dart';
 
 import 'mainmenu.dart';
@@ -43,6 +44,7 @@ class Options extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.play(SoundFx.uiCancel);
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => const MainMenu(),
