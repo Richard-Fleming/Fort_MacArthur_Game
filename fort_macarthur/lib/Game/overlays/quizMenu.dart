@@ -55,10 +55,10 @@ class QuizMenu extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
                 onPressed: () {
+                  gameRef.reset();
+                  gameRef.overlays.remove(QuizMenu.ID);
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const MainMenu(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const MainMenu()),
                   );
                 },
                 child: Text('Back'),

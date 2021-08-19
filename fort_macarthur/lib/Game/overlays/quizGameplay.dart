@@ -105,6 +105,7 @@ class _QuizGameplayState extends State<QuizGameplay> {
   late int i;
   final List randomArray;
   final GameLoop gameRef;
+
   _QuizGameplayState(this.mydata, this.i, this.randomArray, this.gameRef);
 
   Color colortoshow = Colors.indigoAccent;
@@ -112,7 +113,7 @@ class _QuizGameplayState extends State<QuizGameplay> {
   Color wrong = Colors.red;
   int marks = 0;
   bool disableAnswer = false;
-
+  bool gameStart = false;
   // extra varibale to iterate
   int j = 1;
   int timer = 30;
@@ -134,8 +135,7 @@ class _QuizGameplayState extends State<QuizGameplay> {
   // overriding the initstate function to start timer as this screen is created
   @override
   void initState() {
-    starttimer();
-
+    gameReset();
     super.initState();
   }
 
@@ -144,6 +144,16 @@ class _QuizGameplayState extends State<QuizGameplay> {
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
+    }
+  }
+
+  gameReset() {
+    gameStart = true;
+    if (gameStart) {
+      starttimer();
+    } else {
+      j = 1;
+      timer = 30;
     }
   }
 
@@ -165,25 +175,28 @@ class _QuizGameplayState extends State<QuizGameplay> {
   }
 
   void nextquestion() {
-    canceltimer = false;
-    timer = 30;
-    setState(() {
-      if (j < 10) {
-        i = randomArray[j];
-        j++;
-        print("The question number is:  $j and the index value of this is $i");
-      } else {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => QuizResults(marks: marks, gameRef: gameRef),
-        ));
-      }
-      btncolor["a"] = Colors.indigoAccent;
-      btncolor["b"] = Colors.indigoAccent;
-      btncolor["c"] = Colors.indigoAccent;
-      btncolor["d"] = Colors.indigoAccent;
-      disableAnswer = false;
-    });
-    starttimer();
+    if (gameStart) {
+      canceltimer = false;
+      timer = 30;
+      setState(() {
+        if (j < 10) {
+          i = randomArray[j];
+          j++;
+          print(
+              "The question number is:  $j and the index value of this is $i");
+        } else {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => QuizResults(marks: marks, gameRef: gameRef),
+          ));
+        }
+        btncolor["a"] = Colors.indigoAccent;
+        btncolor["b"] = Colors.indigoAccent;
+        btncolor["c"] = Colors.indigoAccent;
+        btncolor["d"] = Colors.indigoAccent;
+        disableAnswer = false;
+      });
+      starttimer();
+    }
   }
 
   String getTime() {
@@ -218,7 +231,9 @@ class _QuizGameplayState extends State<QuizGameplay> {
     });
     // nextquestion();
     // changed timer duration to 1 second
-    Timer(Duration(seconds: 2), nextquestion);
+    if (gameStart) {
+      Timer(Duration(seconds: 2), nextquestion);
+    }
   }
 
   Widget choicebutton(String k) {
@@ -260,12 +275,13 @@ class _QuizGameplayState extends State<QuizGameplay> {
                   title: Text(
                     "Quizstar",
                   ),
-                  content: Text("You sure you want to quit?."),
+                  content: Text("You sure you want to quit?"),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
                         gameRef.reset();
                         gameRef.overlays.remove(QuizMenu.ID);
+                        gameStart = false;
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => const MainMenu(),
                         ));
@@ -300,10 +316,26 @@ class _QuizGameplayState extends State<QuizGameplay> {
                 Expanded(
                   flex: 3,
                   child: Container(
-                    padding: EdgeInsets.all(15.0),
+                    padding: EdgeInsets.all(5.0),
                     alignment: Alignment.center,
                     child: Text(
                       "Time: " + getTime(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontFamily: "Quando",
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(20.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Questions: " + j.toString() + "/10",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20.0,
