@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
@@ -16,40 +17,32 @@ class EnemyManager extends BaseComponent
   // Controls for how long EnemyManager should stop spawning new enemies.
   late Timer _freezeTimer;
 
+  final Vector2 initialSize = Vector2(64, 64);
+
   late HealthBar healthbar;
+
+  late EnemyPlane enemy;
 
   // Holds an object of Random class to generate random numbers.
   Random random = Random();
 
   EnemyManager(this.healthbar) : super() {
-    // Sets the timer to call _spawnEnemy() after every 1 second, until timer is explicitly stops.
-    _timer = Timer(1, callback: _spawnEnemy, repeat: true);
+    // Sets the timer to call _spawnEnemy() after every 3 seconds, until timer is explicitly stopped.
+    _timer = Timer(3, callback: _spawnEnemy, repeat: true);
 
-    // Sets freeze time to 2 seconds. After 2 seconds spawn timer will start again.
-    _freezeTimer = Timer(2, callback: () {
+    // Sets freeze time to 5 seconds. After 2 seconds spawn timer will start again.
+    _freezeTimer = Timer(5, callback: () {
       _timer.start();
     });
   }
   // Spawns a new enemy at random position at the top of the screen.
   void _spawnEnemy() {
-    Vector2 initialSize = Vector2(64, 64);
-
-    // random.nextDouble() generates a random number between 0 and 1.
-    // Multiplying it by gameSize.x makes sure that the value remains between 0 and width of screen.
-    Vector2 position = Vector2(random.nextDouble() * gameSize.x, 0);
-
-    // Clamps the vector such that the enemy sprite remains within the screen.
-    position.clamp(
-      Vector2.zero() + initialSize / 2,
-      gameSize - initialSize / 2,
-    );
-
     // Make sure that we have a valid BuildContext before using it.
     if (gameRef.buildContext != null) {
       /// Gets a random [EnemyData] object from the list.
       final enemyData = _enemyDataList.elementAt(random.nextInt(1));
 
-      EnemyPlane enemy = EnemyPlane(gameSize, healthbar);
+      enemy = EnemyPlane(gameSize, healthbar, enemyData: enemyData);
 
       // Makes sure that the enemy sprite is centered.
       enemy.anchor = Anchor.center;
@@ -66,6 +59,14 @@ class EnemyManager extends BaseComponent
     // Start the timer as soon as current enemy manager get prepared
     // and added to the game instance.
     _timer.start();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // TODO: implement render
+    super.render(canvas);
+
+    enemy.render(canvas);
   }
 
   @override
@@ -104,11 +105,15 @@ class EnemyManager extends BaseComponent
       speed: 150,
       level: 1,
       hMove: false,
+      color: Color.fromARGB(255, 255, 255, 255),
+      size: 40.0,
     ),
     EnemyData(
       speed: 250,
       level: 4,
       hMove: false,
+      color: Color.fromARGB(255, 00, 00, 00),
+      size: 50.0,
     ),
   ];
 }

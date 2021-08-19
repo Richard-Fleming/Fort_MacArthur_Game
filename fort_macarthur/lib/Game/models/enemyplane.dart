@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/game/knows_game_size.dart';
+import 'package:fort_macarthur/Game/models/enemy_data.dart';
 import 'package:fort_macarthur/Game/models/missile.dart';
 import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
@@ -10,7 +11,7 @@ import 'dart:math';
 import 'healthbar.dart';
 
 class EnemyPlane extends PositionComponent
-    with KnowsGameSize, Hitbox, Collidable {
+    with /* KnowsGameSize, */ Hitbox, Collidable {
   // size of hitbox
   final double bodySize = 40.0;
 
@@ -31,11 +32,16 @@ class EnemyPlane extends PositionComponent
   // vector of determined end position
   Vector2 bottomPosition = Vector2.zero();
 
+  late EnemyData enemyData;
+
   // heading vector
   Vector2 dir = Vector2.zero();
 
   // position used for the particles
   Vector2 position = Vector2.zero();
+
+  // position used for the particles
+  Vector2 spawnPosition = Vector2.zero();
 
   // speed at which plane approaches end position
   double speed = 160;
@@ -58,7 +64,11 @@ class EnemyPlane extends PositionComponent
 
   late TrailParticleSystem particles;
 
-  EnemyPlane(this.screenSize, this.healthbar) {
+  EnemyPlane(
+    this.screenSize,
+    this.healthbar, {
+    required this.enemyData,
+  }) {
     startpoints.add(Vector2(bodySize, -60.0)); // left starting point
     startpoints.add(Vector2(
         (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
@@ -110,7 +120,7 @@ class EnemyPlane extends PositionComponent
   void render(Canvas c) {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
-    hitbox.render(c, Paint()..color = Colors.red);
+    hitbox.render(c, Paint()..color = enemyData.color);
 
     particles.render(c);
   }

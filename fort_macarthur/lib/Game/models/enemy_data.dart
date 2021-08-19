@@ -1,3 +1,8 @@
+import 'dart:ffi';
+import 'dart:ui';
+
+import 'package:flame/components.dart';
+
 /// This class represents all the details required
 /// to create an [Enemy] component.
 class EnemyData {
@@ -10,9 +15,14 @@ class EnemyData {
   // Indicates if this enemy can move horizontally.
   final bool hMove;
 
-  const EnemyData({
-    required this.speed,
-    required this.level,
-    required this.hMove,
-  });
+  final Color color;
+
+  final double size;
+
+  const EnemyData(
+      {required this.speed,
+      required this.level,
+      required this.hMove,
+      required this.color,
+      required this.size});
 }
