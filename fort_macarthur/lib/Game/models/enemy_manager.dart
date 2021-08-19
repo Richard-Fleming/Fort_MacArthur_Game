@@ -1,16 +1,13 @@
-/* import 'dart:math';
+import 'dart:async';
+import 'dart:math';
 
-import 'package:flame/sprite.dart';
 import 'package:flame/components.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
+import 'package:fort_macarthur/Game/game/knows_game_size.dart';
+import 'package:fort_macarthur/Game/models/enemy_data.dart';
+import 'package:fort_macarthur/Game/models/enemyplane.dart';
+import 'package:fort_macarthur/Game/models/healthbar.dart';
 
-import '../models/enemy_data.dart';
-import 'enemyplane.dart';
-import '../game/knowsGameSize.dart';
-
-// This component class takes care of spawning new enemy components
-// randomly from top of the screen. It uses the HasGameRef mixin so that
-// it can add child components.
 class EnemyManager extends BaseComponent
     with KnowsGameSize, HasGameRef<GameLoop> {
   // The timer which runs the enemy spawner code at regular interval of time.
@@ -19,10 +16,12 @@ class EnemyManager extends BaseComponent
   // Controls for how long EnemyManager should stop spawning new enemies.
   late Timer _freezeTimer;
 
+  late HealthBar healthbar;
+
   // Holds an object of Random class to generate random numbers.
   Random random = Random();
 
-  EnemyManager() : super() {
+  EnemyManager(this.healthbar) : super() {
     // Sets the timer to call _spawnEnemy() after every 1 second, until timer is explicitly stops.
     _timer = Timer(1, callback: _spawnEnemy, repeat: true);
 
@@ -31,7 +30,6 @@ class EnemyManager extends BaseComponent
       _timer.start();
     });
   }
-
   // Spawns a new enemy at random position at the top of the screen.
   void _spawnEnemy() {
     Vector2 initialSize = Vector2(64, 64);
@@ -51,7 +49,7 @@ class EnemyManager extends BaseComponent
       /// Gets a random [EnemyData] object from the list.
       final enemyData = _enemyDataList.elementAt(random.nextInt(1));
 
-      
+      EnemyPlane enemy = EnemyPlane(gameSize, healthbar);
 
       // Makes sure that the enemy sprite is centered.
       enemy.anchor = Anchor.center;
@@ -60,22 +58,6 @@ class EnemyManager extends BaseComponent
       // This ensures the collision detection working correctly.
       gameRef.add(enemy);
     }
-  }
-
-  // For a given score, this method returns a max level
-  // of enemy that can be used for spawning.
-  int mapScoreToMaxEnemyLevel(int score) {
-    int level = 1;
-
-    if (score > 1500) {
-      level = 4;
-    } else if (score > 500) {
-      level = 3;
-    } else if (score > 100) {
-      level = 2;
-    }
-
-    return level;
   }
 
   @override
@@ -119,13 +101,14 @@ class EnemyManager extends BaseComponent
   /// A private list of all [EnemyData]s.
   static const List<EnemyData> _enemyDataList = [
     EnemyData(
-      speed: 200,
+      speed: 150,
       level: 1,
+      hMove: false,
     ),
     EnemyData(
-      speed: 400,
-      level: 1,
+      speed: 250,
+      level: 4,
+      hMove: false,
     ),
   ];
 }
- */

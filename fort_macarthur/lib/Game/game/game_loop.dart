@@ -1,23 +1,29 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/models/enemyplane.dart';
+import 'package:fort_macarthur/Game/game/knows_game_size.dart';
+import 'package:fort_macarthur/Game/models/enemy_manager.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
-import 'package:fort_macarthur/Game/models/enemyManager.dart';
+import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
-import 'knowsGameSize.dart';
+import '../models/upgrades.dart';
 
 // main game loop. pan detector necessary for touch detection
-class GameLoop extends BaseGame with PanDetector, TapDetector {
+class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   MissileSystem missileSystem = new MissileSystem();
+
+  int enemyCount = 3;
 
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
+
+  // Stores a reference to an enemy manager component.
+  late EnemyManager _enemyManager;
 
   var ammoManager = new AmmunitionManager();
 
@@ -32,15 +38,16 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     // Check as if navigating between menuand gameplay it will be called multiple times
     if (!isAlreadyLoaded) {
       // put image loading, class initialization here
-
       healthbar = HealthBar(size.x / 1.5, size.y - 50);
       add(healthbar);
 
-      EnemyPlane enemy =
-          EnemyPlane(enemyPos: viewport.canvasSize / 2 + Vector2(0, 100));
-      add(enemy);
+      _enemyManager = EnemyManager(healthbar);
+      add(_enemyManager);
 
       missileSystem.baseInit(size);
+
+      ammoManager.ammo += finalTallyAmmo;
+      healthbar.upgradeHealth(finalTallyHealth);
     }
   }
 
@@ -67,41 +74,23 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   // drag motion started
   void onPanStart(DragStartInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.setupDestination(details);
   }
 
   // continued touch dragging movement
   void onPanUpdate(DragUpdateInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.moveDestination(details);
   }
 
   // when the touch ends
   void onPanEnd(DragEndInfo details) {
+    isPressed = false;
+    healthbar.setFade(isPressed);
     missileSystem.launchMissile();
-  }
-
-  //Resets game when navigating between menu and game screens for example
-  void reset() {
-    missileSystem.reset();
-
-    /* components.whereType<EnemyPlane>().forEach((enemyPlane) {
-      enemyPlane.remove();
-    }); */
-
-    healthbar.reset();
-    ammoManager.reset();
-  }
-
-  // updates game
-  void update(double dt) {
-    super.update(dt);
-    missileSystem.update(dt);
-    healthbar.update(dt);
-
-    // If true we add gameover overlay
-    if (healthbar.getHealth() == 0 || ammoManager.ammo == 0) {
-      overlays.add(GameOverMenu.ID);
-    }
   }
 
   @override
@@ -122,12 +111,49 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     });
   }
 
+  //Resets game when navigating between menu and game screens for example
+  void reset() {
+    missileSystem.reset();
+
+    components.whereType<EnemyPlane>().forEach((enemyPlane) {
+      enemyPlane.stopSound();
+      enemyPlane.remove();
+    });
+
+    healthbar.reset();
+    ammoManager.reset();
+  }
+
+  // updates game
+  void update(double dt) {
+    super.update(dt);
+
+    if (missileSystem.wasLaunched) {
+      ammoManager.decreaseAmmo(1);
+      missileSystem.wasLaunched = false;
+    }
+
+    missileSystem.update(dt);
+    healthbar.update(dt);
+
+    if (healthbar.getHealth() == 0 ||
+        (ammoManager.ammo == 0 && !missileSystem.missileLaunched)) {
+      overlays.add(GameOverMenu.ID);
+    }
+  }
+
   // renders objects to the canvas
   void render(Canvas canvas) {
     super.render(canvas);
     missileSystem.render(canvas);
     ammoManager.draw(canvas);
     healthbar.render(canvas);
+
+    //TODO: Remove this when proper Enemy Manager is implemented.
+
+    textPaint.render(
+        canvas, enemyCount.toString() + ' Enemies That Remain', Vector2(95, 10),
+        anchor: Anchor.topCenter);
   }
 
   // changes the background color

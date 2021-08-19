@@ -7,8 +7,12 @@ class EnemyData {
   // Level of this enemy.
   final int level;
 
+  // Indicates if this enemy can move horizontally.
+  final bool hMove;
+
   const EnemyData({
     required this.speed,
     required this.level,
+    required this.hMove,
   });
 }
