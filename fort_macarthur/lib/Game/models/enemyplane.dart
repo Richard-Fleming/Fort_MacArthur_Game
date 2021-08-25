@@ -22,6 +22,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // heading vector
   Vector2 dir = Vector2.zero();
 
+  // vector of determined end position
+  Vector2 bottomPosition = Vector2.zero();
+
   // position used for the particles
   Vector2 position = Vector2.zero();
 
@@ -29,6 +32,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   double speed = 160;
 
   bool destroyed = false;
+
+  bool initialSpawn = true;
 
   late HealthBar healthbar;
 
@@ -53,9 +58,15 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     this.spawnPos, {
     required this.enemyData,
   }) {
+    size = Vector2(bodySize, bodySize);
     hitbox.size = Vector2(bodySize, bodySize);
+    hitbox.offsetPosition = spawnPos;
 
     addShape(hitbox);
+
+    hitbox.size = Vector2(bodySize, bodySize);
+    hitbox.offsetPosition = spawnPos;
+    hitbox.position = spawnPos;
 
     resetPlane();
 
@@ -75,6 +86,11 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void update(double dt) {
     super.update(dt);
 
+    hitbox.offsetPosition.add(dir * speed * dt);
+    hitbox.component.position = hitbox.offsetPosition;
+    position = hitbox.offsetPosition;
+    planeSound.play();
+
     if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
       planeSound.stop();
       resetPlane();
@@ -89,14 +105,16 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void render(Canvas c) {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
-    hitbox.render(c, Paint()..color = Colors.red);
+    hitbox.render(c, Paint()..color = enemyData.color);
 
     particles.render(c);
   }
 
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
-    //hitbox.offsetPosition = startpoints[startingpoint];
+    hitbox.offsetPosition = spawnPos;
+    hitbox.position = hitbox.offsetPosition;
+    position = hitbox.offsetPosition;
 
     // Now that the plane has been set up at the top,
     // we will now determine a bottom position
@@ -104,6 +122,14 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
     // With all info required, now find the normalized path
     determinePath();
+
+    // only damage the health bar if the plane was not destroyed on this reset
+    // and it isn't the plane's first time spawning in
+    if (!initialSpawn && !destroyed)
+      healthbar.manageHealth(-2);
+    else if (initialSpawn) {
+      initialSpawn = false;
+    }
   }
 
   // Determine the position at the bottom of the screeen
@@ -117,6 +143,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     } else if (newPos > screenSize.x / 2) {
       newPos -= bodySize / 2;
     }
+
+    bottomPosition = new Vector2(newPos, screenSize.y);
   }
 
   // Determines the line towards the end position based on the start position
@@ -124,7 +152,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // Use the newly determined bottom point
     // against the chosen starting point
     // in order to gauge the line towards the bottom from the start.
-    // dir = (bottomPosition - startpoints[startingpoint]).normalized();
+    dir = (bottomPosition - spawnPos).normalized();
   }
 
   @override
@@ -137,10 +165,15 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   }
 
   void reset() {
+    initialSpawn = true;
     resetPlane();
   }
 
   void stopSound() {
     planeSound.stop();
+  }
+
+  Vector2 getPosition() {
+    return hitbox.position;
   }
 }

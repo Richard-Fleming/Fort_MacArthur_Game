@@ -1,16 +1,13 @@
-import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
-import 'package:fort_macarthur/Game/game/knows_game_size.dart';
 import 'package:fort_macarthur/Game/models/enemy_data.dart';
 import 'package:fort_macarthur/Game/models/enemyplane.dart';
 import 'package:fort_macarthur/Game/models/healthbar.dart';
 
-class EnemyManager extends BaseComponent
-    with KnowsGameSize, HasGameRef<GameLoop> {
+class EnemyManager extends BaseComponent with HasGameRef<GameLoop> {
   // The timer which runs the enemy spawner code at regular interval of time.
   late Timer _timer;
 
@@ -23,49 +20,60 @@ class EnemyManager extends BaseComponent
   // the last picked starting point
   int startingpoint = 0;
 
+  List<EnemyPlane> _listOfEnemies = [];
+
   final Vector2 initialSize = Vector2(64, 64);
 
   late HealthBar healthbar;
+
+  final bool spawnEnemies = true;
 
   late EnemyPlane enemy;
 
   late EnemyData enemyData;
 
+  // size of the device screen
+  final Vector2 screenSize;
+
   // Holds an object of Random class to generate random numbers.
   Random random = Random();
 
-  EnemyManager(this.healthbar) : super() {
+  EnemyManager(this.screenSize, this.healthbar) : super() {
     // Sets the timer to call _spawnEnemy() after every 3 seconds, until timer is explicitly stopped.
     _timer = Timer(3, callback: _spawnEnemy, repeat: true);
 
-    // Sets freeze time to 5 seconds. After 2 seconds spawn timer will start again.
-    _freezeTimer = Timer(5, callback: () {
-      _timer.start();
-    });
+    // Sets freeze time to 5 seconds.
+    _freezeTimer = Timer(5, callback: reset, repeat: spawnEnemies);
 
     startpoints.add(Vector2.zero()); // left starting point
     startpoints.add(Vector2.zero()); // middle starting point
     startpoints.add(Vector2.zero()); // right Start Point
   }
 
-  // Spawns a new enemy at random position at the top of the screen.
   void _spawnEnemy() {
     // Make sure that we have a valid BuildContext before using it.
     if (gameRef.buildContext != null) {
       /// Gets a random [EnemyData] object from the list.
-      final enemyData = _enemyDataList.elementAt(random.nextInt(1));
+      final enemyData =
+          _enemyDataList.elementAt(random.nextInt(_enemyDataList.length));
 
       if (startpoints[0] == Vector2.zero()) {
         startpoints[0] = Vector2(enemyData.size, -60.0);
         startpoints[1] =
-            Vector2((gameSize.x / 2.0) - (enemyData.size / 2), -60.0);
-        startpoints[2] = Vector2(gameSize.x - (enemyData.size * 2), -60.0);
+            Vector2((screenSize.x / 2.0) - (enemyData.size / 2), -60.0);
+        startpoints[2] = Vector2(screenSize.x - (enemyData.size * 2), -60.0);
       }
 
-      int spawnPos = random.nextInt(2);
+      Vector2 spawn = startpoints[random.nextInt(startpoints.length)];
+      enemy = EnemyPlane(screenSize, healthbar, spawn, enemyData: enemyData);
 
-      enemy = EnemyPlane(gameSize, healthbar, startpoints[spawnPos],
-          enemyData: enemyData);
+      _listOfEnemies.add(enemy);
+
+      if (_listOfEnemies.length == 3) {
+        _timer.stop();
+      }
+
+      if (enemy.getPosition().y < 0) enemy.resetPlane();
 
       // Add it to components list of game instance, instead of EnemyManager.
       // This ensures the collision detection working correctly.
@@ -79,14 +87,6 @@ class EnemyManager extends BaseComponent
     // Start the timer as soon as current enemy manager get prepared
     // and added to the game instance.
     _timer.start();
-  }
-
-  @override
-  void render(Canvas canvas) {
-    // TODO: implement render
-    super.render(canvas);
-
-    enemy.render(canvas);
   }
 
   @override
@@ -115,7 +115,6 @@ class EnemyManager extends BaseComponent
     startingpoint = Random().nextInt(startpoints.length);
   }
 
-  // Pauses spawn timer for 2 seconds when called.
   void freeze() {
     _timer.stop();
     _freezeTimer.stop();

@@ -40,7 +40,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
       healthbar = HealthBar(size.x / 1.5, size.y - 50);
       add(healthbar);
 
-      _enemyManager = EnemyManager(healthbar);
+      _enemyManager = EnemyManager(size, healthbar);
       add(_enemyManager);
 
       missileSystem.baseInit(size);
