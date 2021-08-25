@@ -45,11 +45,11 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
 
       for (var i = 0; i < enemies.length; i++) {
         add(enemies[i]);
-        checker.addObjectToCheck(enemies[i], CollType.Plane);
+        checker.addObjectToCheck(enemies[i]);
       }
 
       missileSystem.baseInit(size);
-      checker.addObjectToCheck(missileSystem.missile, CollType.Missile);
+      checker.addMissile(missileSystem.missile);
 
       ammoManager.ammo += finalTallyAmmo;
       healthbar.upgradeHealth(finalTallyHealth);
@@ -129,6 +129,14 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
         (ammoManager.ammo == 0 && !missileSystem.missileLaunched)) {
       overlays.add(GameOverMenu.ID);
     }
+
+    enemyCount = 0;
+
+    for (int i = 0; i < enemies.length; i++) {
+      if (!enemies[i].destroyed) {
+        enemyCount++;
+      }
+    }
   }
 
   // renders objects to the canvas
@@ -140,8 +148,8 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
 
     //TODO: Remove this when proper Enemy Manager is implemented.
 
-    textPaint.render(
-        canvas, enemyCount.toString() + ' Enemies That Remain', Vector2(95, 10),
+    textPaint.render(canvas, enemyCount.toString() + ' Enemies That Remain',
+        Vector2(115, 38),
         anchor: Anchor.topCenter);
   }
 

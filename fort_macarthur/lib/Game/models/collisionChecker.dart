@@ -1,57 +1,46 @@
 import 'dart:ui';
-import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
-
-enum CollType { Missile, Plane }
+import 'enemyplane.dart';
+import 'missile.dart';
 
 class Collider {
   Collider();
-  List<PositionComponent> collidables = [];
-  List<CollType> collisionTypes = [];
+  List<EnemyPlane> collidables = [];
 
-  void addObjectToCheck(PositionComponent object, CollType collType) {
+  late Missile collMissile;
+
+  void addObjectToCheck(EnemyPlane object) {
     collidables.add(object);
-    collisionTypes.add(collType);
+  }
+
+  void addMissile(Missile miss) {
+    collMissile = miss;
   }
 
   void update(double dt) {
-    if (collidables.length > 1) {
-      // make sure there's at least 2 collidables to check
+    if (collidables.length > 0) {
+      // make sure there's at least 1 collidable to check
       for (int i = 0; i < collidables.length; i++) {
-        // don't bother checking enemy planes for collisions, only check missiles
-        if (collisionTypes[i] != CollType.Missile) continue;
-        for (int n = 0; n < collidables.length; n++) {
-          if (n == i)
-            continue; // don't check against self
-          else {
-            // do collision code here
-            // -----------------------
-            // d0 = B.max.x < A.min.x;
-            bool d0 = collidables[n].position.x + collidables[n].size.x <
-                collidables[i].position.x - collidables[i].size.x;
-            // d1 = A.max.x < B.min.x;
-            bool d1 = collidables[i].position.x + collidables[i].size.x <
-                collidables[n].position.x - collidables[n].size.x;
-            // d2 = B.max.y < A.min.y;
-            bool d2 = collidables[n].position.y + collidables[n].size.y <
-                collidables[i].position.y - collidables[i].size.y;
-            // d3 = A.max.y < B.min.y;
-            bool d3 = collidables[i].position.y + collidables[i].size.y <
-                collidables[n].position.y - collidables[n].size.y;
-            // -----------------------
-            if (!(d0 | d1 | d2 | d3)) {
-              print("object " +
-                  i.toString() +
-                  " of type " +
-                  collisionTypes[i].toString() +
-                  " and object " +
-                  n.toString() +
-                  " of type " +
-                  collisionTypes[n].toString() +
-                  " collided");
-            }
-          }
+        // do collision code here
+        // -----------------------
+        // d0 = B.max.x < A.min.x;
+        bool d0 = collMissile.position.x + collMissile.size.x <
+            collidables[i].position.x - collidables[i].size.x;
+        // d1 = A.max.x < B.min.x;
+        bool d1 = collidables[i].position.x + collidables[i].size.x <
+            collMissile.position.x - collMissile.size.x;
+        // d2 = B.max.y < A.min.y;
+        bool d2 = collMissile.position.y + collMissile.size.y <
+            collidables[i].position.y - collidables[i].size.y;
+        // d3 = A.max.y < B.min.y;
+        bool d3 = collidables[i].position.y + collidables[i].size.y <
+            collMissile.position.y - collMissile.size.y;
+        // -----------------------
+        if (!(d0 | d1 | d2 | d3)) {
+          collidables[i].destroyed = true;
+          collidables[i].reset();
+          collMissile.touchedPlane = true;
+          break; // only do one collision at a time, don't bother checking all
         }
       }
     }

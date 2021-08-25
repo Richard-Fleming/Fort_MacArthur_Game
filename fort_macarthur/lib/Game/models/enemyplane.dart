@@ -91,29 +91,30 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void update(double dt) {
     super.update(dt);
 
-    if (timeToRespawn <= 0) {
-      hitbox.offsetPosition.add(dir * speed * dt);
-      hitbox.component.position = hitbox.offsetPosition;
-      position = hitbox.offsetPosition;
-      planeSound.play();
-    } else
-      timeToRespawn -= dt;
+    if (!destroyed) {
+      if (timeToRespawn <= 0) {
+        hitbox.offsetPosition.add(dir * speed * dt);
+        hitbox.component.position = hitbox.offsetPosition;
+        position = hitbox.offsetPosition;
+        planeSound.play();
+      } else
+        timeToRespawn -= dt;
 
-    if (hitbox.position.y > screenSize.y + hitbox.size.y) {
-      planeSound.stop();
-      resetPlane();
+      if (hitbox.position.y > screenSize.y + hitbox.size.y) {
+        planeSound.stop();
+        resetPlane();
+      }
     }
-
+    particles.update(dt);
     particles.updatePosition(hitbox.offsetPosition + Vector2.all(bodySize / 2));
     particles.updateDirection(-dir);
-    particles.update(dt);
   }
 
   @override
   void render(Canvas c) {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
-    hitbox.render(c, Paint()..color = Colors.red);
+    if (!destroyed) hitbox.render(c, Paint()..color = Colors.red);
 
     particles.render(c);
   }
@@ -170,18 +171,11 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   void reset() {
     initialSpawn = true;
-    timeToRespawn = 0;
+    planeSound.stop();
     resetPlane();
   }
 
   void stopSound() {
     planeSound.stop();
-  }
-
-  @override
-  void onCollision(Set<Vector2> points, Collidable other) {
-    if (other is Missile) {
-      print("plane hit missile :)");
-    }
   }
 }

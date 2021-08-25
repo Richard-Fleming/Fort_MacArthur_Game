@@ -21,6 +21,7 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   );
 
   bool playSoundOnce = true;
+  bool touchedPlane = false;
 
   Missile(
       {required Vector2 givenSize,
