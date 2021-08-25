@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/game/knows_game_size.dart';
 import 'package:fort_macarthur/Game/models/enemy_data.dart';
 import 'package:fort_macarthur/Game/models/missile.dart';
 import 'package:fort_macarthur/Game/models/sound_manager.dart';
@@ -10,28 +9,14 @@ import 'package:fort_macarthur/game/models/trail_particles.dart';
 import 'dart:math';
 import 'healthbar.dart';
 
-class EnemyPlane extends PositionComponent
-    with /* KnowsGameSize, */ Hitbox, Collidable {
+class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // size of hitbox
   final double bodySize = 40.0;
-
-  // starting points -- add more if needed
-  final List<Vector2> startpoints = [];
-
-  // the last picked starting point
-  int startingpoint = 0;
 
   // size of the device screen
   final Vector2 screenSize;
 
-  // Time between starting
-  double timeToRespawn = 0;
-  // Max time that it can take before a plane starts again
-  int maxTimeBetweenRespawn = 4;
-
-  // vector of determined end position
-  Vector2 bottomPosition = Vector2.zero();
-
+  // Stores dynamic variables for different enemy types
   late EnemyData enemyData;
 
   // heading vector
@@ -40,13 +25,9 @@ class EnemyPlane extends PositionComponent
   // position used for the particles
   Vector2 position = Vector2.zero();
 
-  // position used for the particles
-  Vector2 spawnPosition = Vector2.zero();
-
   // speed at which plane approaches end position
   double speed = 160;
 
-  bool initialSpawn = true;
   bool destroyed = false;
 
   late HealthBar healthbar;
@@ -64,19 +45,16 @@ class EnemyPlane extends PositionComponent
 
   late TrailParticleSystem particles;
 
+  late Vector2 spawnPos;
+
   EnemyPlane(
     this.screenSize,
-    this.healthbar, {
+    this.healthbar,
+    this.spawnPos, {
     required this.enemyData,
   }) {
-    startpoints.add(Vector2(bodySize, -60.0)); // left starting point
-    startpoints.add(Vector2(
-        (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
-    startpoints.add(
-        Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
-
     hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = startpoints[0];
+
     addShape(hitbox);
 
     resetPlane();
@@ -97,15 +75,6 @@ class EnemyPlane extends PositionComponent
   void update(double dt) {
     super.update(dt);
 
-    if (timeToRespawn <= 0) {
-      hitbox.offsetPosition = Vector2(
-          hitbox.offsetPosition.x + (dir.x * speed) * dt,
-          hitbox.offsetPosition.y + (dir.y * speed) * dt);
-      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
-      planeSound.play();
-    } else
-      timeToRespawn -= dt;
-
     if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
       planeSound.stop();
       resetPlane();
@@ -120,19 +89,14 @@ class EnemyPlane extends PositionComponent
   void render(Canvas c) {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
-    hitbox.render(c, Paint()..color = enemyData.color);
+    hitbox.render(c, Paint()..color = Colors.red);
 
     particles.render(c);
   }
 
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
-    // generates num between 0 and 2
-    startingpoint = Random().nextInt(startpoints.length);
-    hitbox.offsetPosition = startpoints[startingpoint];
-
-    position =
-        Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
+    //hitbox.offsetPosition = startpoints[startingpoint];
 
     // Now that the plane has been set up at the top,
     // we will now determine a bottom position
@@ -140,17 +104,6 @@ class EnemyPlane extends PositionComponent
 
     // With all info required, now find the normalized path
     determinePath();
-
-    var random = new Random(); // needed to allow access for static variables
-    timeToRespawn = random.nextDouble() * maxTimeBetweenRespawn;
-
-    // only damage the health bar if the plane was not destroyed on this reset
-    // and it isn't the plane's first time spawning in
-    if (!initialSpawn && !destroyed)
-      healthbar.manageHealth(-2);
-    else if (initialSpawn) {
-      initialSpawn = false;
-    }
   }
 
   // Determine the position at the bottom of the screeen
@@ -164,8 +117,6 @@ class EnemyPlane extends PositionComponent
     } else if (newPos > screenSize.x / 2) {
       newPos -= bodySize / 2;
     }
-
-    bottomPosition = new Vector2(newPos, screenSize.y);
   }
 
   // Determines the line towards the end position based on the start position
@@ -173,7 +124,7 @@ class EnemyPlane extends PositionComponent
     // Use the newly determined bottom point
     // against the chosen starting point
     // in order to gauge the line towards the bottom from the start.
-    dir = (bottomPosition - startpoints[startingpoint]).normalized();
+    // dir = (bottomPosition - startpoints[startingpoint]).normalized();
   }
 
   @override
@@ -186,7 +137,6 @@ class EnemyPlane extends PositionComponent
   }
 
   void reset() {
-    timeToRespawn = 0;
     resetPlane();
   }
 

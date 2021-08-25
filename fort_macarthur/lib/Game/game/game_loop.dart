@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/game/knows_game_size.dart';
-import 'package:fort_macarthur/Game/models/enemy_manager.dart';
+import 'package:fort_macarthur/Game/models/enemyManager.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
@@ -18,12 +17,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
 
   int enemyCount = 3;
 
+  // Stores a reference to an enemy manager component.
+  late EnemyManager _enemyManager;
+
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
-
-  // Stores a reference to an enemy manager component.
-  late EnemyManager _enemyManager;
 
   var ammoManager = new AmmunitionManager();
 
@@ -91,24 +90,6 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
     isPressed = false;
     healthbar.setFade(isPressed);
     missileSystem.launchMissile();
-  }
-
-  @override
-  void prepare(Component c) {
-    super.prepare(c);
-
-    if (c is KnowsGameSize) {
-      c.onResize(this.size);
-    }
-  }
-
-  @override
-  void onResize(Vector2 canvasSize) {
-    super.onResize(canvasSize);
-
-    this.components.whereType<KnowsGameSize>().forEach((component) {
-      component.onResize(this.size);
-    });
   }
 
   //Resets game when navigating between menu and game screens for example

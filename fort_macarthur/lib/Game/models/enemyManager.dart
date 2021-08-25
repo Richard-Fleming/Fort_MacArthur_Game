@@ -17,11 +17,19 @@ class EnemyManager extends BaseComponent
   // Controls for how long EnemyManager should stop spawning new enemies.
   late Timer _freezeTimer;
 
+  // starting points -- add more if needed
+  final List<Vector2> startpoints = [];
+
+  // the last picked starting point
+  int startingpoint = 0;
+
   final Vector2 initialSize = Vector2(64, 64);
 
   late HealthBar healthbar;
 
   late EnemyPlane enemy;
+
+  late EnemyData enemyData;
 
   // Holds an object of Random class to generate random numbers.
   Random random = Random();
@@ -34,7 +42,12 @@ class EnemyManager extends BaseComponent
     _freezeTimer = Timer(5, callback: () {
       _timer.start();
     });
+
+    startpoints.add(Vector2.zero()); // left starting point
+    startpoints.add(Vector2.zero()); // middle starting point
+    startpoints.add(Vector2.zero()); // right Start Point
   }
+
   // Spawns a new enemy at random position at the top of the screen.
   void _spawnEnemy() {
     // Make sure that we have a valid BuildContext before using it.
@@ -42,10 +55,17 @@ class EnemyManager extends BaseComponent
       /// Gets a random [EnemyData] object from the list.
       final enemyData = _enemyDataList.elementAt(random.nextInt(1));
 
-      enemy = EnemyPlane(gameSize, healthbar, enemyData: enemyData);
+      if (startpoints[0] == Vector2.zero()) {
+        startpoints[0] = Vector2(enemyData.size, -60.0);
+        startpoints[1] =
+            Vector2((gameSize.x / 2.0) - (enemyData.size / 2), -60.0);
+        startpoints[2] = Vector2(gameSize.x - (enemyData.size * 2), -60.0);
+      }
 
-      // Makes sure that the enemy sprite is centered.
-      enemy.anchor = Anchor.center;
+      int spawnPos = random.nextInt(2);
+
+      enemy = EnemyPlane(gameSize, healthbar, startpoints[spawnPos],
+          enemyData: enemyData);
 
       // Add it to components list of game instance, instead of EnemyManager.
       // This ensures the collision detection working correctly.
@@ -90,6 +110,9 @@ class EnemyManager extends BaseComponent
   void reset() {
     _timer.stop();
     _timer.start();
+
+    // generates num between 0 and 2
+    startingpoint = Random().nextInt(startpoints.length);
   }
 
   // Pauses spawn timer for 2 seconds when called.
