@@ -14,7 +14,7 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   Vector2 missileDirection = Vector2.zero();
   double missileSpeed;
   late TrailParticleSystem particles;
-  HitboxShape collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
+  HitboxRectangle collider = HitboxRectangle(relation: Vector2(1.0, 1.0));
 
   GameSoundEffect missileSound = new GameSoundEffect(
     soundPath: "assets/sounds/missileSound.wav",
@@ -23,7 +23,7 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   bool playSoundOnce = true;
 
   Missile(
-      {required Vector2 size,
+      {required Vector2 givenSize,
       required Color color,
       required Vector2 position,
       double angle = 0.0,
@@ -31,7 +31,7 @@ class Missile extends PositionComponent with Hitbox, Collidable {
       this.missileSpeed = 300.0}) {
     particles = new TrailParticleSystem(
       parentDirection: -missileDirection,
-      spawnPosition: position,
+      spawnPosition: position - (size / 2.0),
       color: particleColor,
       speed: 40,
       spawnRate: 0.005,
@@ -40,14 +40,19 @@ class Missile extends PositionComponent with Hitbox, Collidable {
       radius: 5,
     );
 
-    collider.size = size;
+    collider.size = givenSize;
+    size = givenSize;
+
     addShape(collider);
-    collider.component.size = size;
+
+    collider.size = givenSize;
     collider.offsetPosition = position;
+    collider.position = position;
   }
 
   void setPosition(Vector2 position) {
     collider.offsetPosition = position - size / 2.0;
+    collider.position = collider.offsetPosition;
   }
 
   void playLaunchSound() {
@@ -82,6 +87,7 @@ class Missile extends PositionComponent with Hitbox, Collidable {
     playLaunchSound();
 
     collider.offsetPosition.add(missileDirection * missileSpeed * dt);
+    collider.position = collider.offsetPosition;
     particles.updatePosition(collider.offsetPosition + size);
     particles.updateDirection(missileDirection);
     particles.update(dt);
@@ -92,13 +98,5 @@ class Missile extends PositionComponent with Hitbox, Collidable {
   void render(Canvas canvas) {
     particles.render(canvas);
     collider.render(canvas, Paint()..color = Colors.white);
-  }
-
-  @override
-  void onCollision(Set<Vector2> points, Collidable other) {
-    if (other is EnemyPlane) {
-      print("missile hit plane from base :)");
-      other.reset();
-    }
   }
 }

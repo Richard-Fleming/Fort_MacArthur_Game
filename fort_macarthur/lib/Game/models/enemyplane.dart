@@ -52,7 +52,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   bool playSoundOnce = true;
 
   // plane body
-  HitboxShape hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
+  HitboxRectangle hitbox = HitboxRectangle(relation: Vector2(1.0, 1.0));
 
   late TrailParticleSystem particles;
 
@@ -63,9 +63,15 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     startpoints.add(
         Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
 
+    size = Vector2(bodySize, bodySize);
     hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = startpoints[0];
+
     addShape(hitbox);
+
+    hitbox.size = Vector2(bodySize, bodySize);
+
+    hitbox.offsetPosition = startpoints[0];
+    hitbox.position = startpoints[0];
 
     resetPlane();
 
@@ -86,20 +92,19 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.update(dt);
 
     if (timeToRespawn <= 0) {
-      hitbox.offsetPosition = Vector2(
-          hitbox.offsetPosition.x + (dir.x * speed) * dt,
-          hitbox.offsetPosition.y + (dir.y * speed) * dt);
-      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
+      hitbox.offsetPosition.add(dir * speed * dt);
+      hitbox.component.position = hitbox.offsetPosition;
+      position = hitbox.offsetPosition;
       planeSound.play();
     } else
       timeToRespawn -= dt;
 
-    if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
+    if (hitbox.position.y > screenSize.y + hitbox.size.y) {
       planeSound.stop();
       resetPlane();
     }
 
-    particles.updatePosition(position + Vector2.all(bodySize / 2));
+    particles.updatePosition(hitbox.offsetPosition + Vector2.all(bodySize / 2));
     particles.updateDirection(-dir);
     particles.update(dt);
   }
@@ -118,9 +123,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // generates num between 0 and 2
     startingpoint = Random().nextInt(startpoints.length);
     hitbox.offsetPosition = startpoints[startingpoint];
-
-    position =
-        Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
+    hitbox.position = hitbox.offsetPosition;
+    position = hitbox.offsetPosition;
 
     // Now that the plane has been set up at the top,
     // we will now determine a bottom position
@@ -147,10 +151,10 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void pickBottomPosition() {
     double newPos = Random().nextDouble() * screenSize.x;
 
-    if (newPos < screenSize.x / 2) {
-      newPos += bodySize / 2;
-    } else if (newPos > screenSize.x / 2) {
-      newPos -= bodySize / 2;
+    if (newPos < bodySize) {
+      newPos += bodySize;
+    } else if (newPos > screenSize.x - bodySize) {
+      newPos -= bodySize;
     }
 
     bottomPosition = new Vector2(newPos, screenSize.y);
@@ -164,21 +168,20 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     dir = (bottomPosition - startpoints[startingpoint]).normalized();
   }
 
-  @override
-  void onCollision(Set<Vector2> points, Collidable other) {
-    if (other is Missile) {
-      destroyed = true;
-      resetPlane();
-      print("missile was touched :))");
-    }
-  }
-
   void reset() {
+    initialSpawn = true;
     timeToRespawn = 0;
     resetPlane();
   }
 
   void stopSound() {
     planeSound.stop();
+  }
+
+  @override
+  void onCollision(Set<Vector2> points, Collidable other) {
+    if (other is Missile) {
+      print("plane hit missile :)");
+    }
   }
 }

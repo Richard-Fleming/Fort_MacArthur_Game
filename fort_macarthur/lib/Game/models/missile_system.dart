@@ -38,7 +38,7 @@ class MissileSystem {
   // initializing all of the game objects
   MissileSystem() {
     missile = new Missile(
-        size: Vector2(30, 10),
+        givenSize: Vector2(30, 10),
         color: Color(0xFFFFFFFF),
         position: Vector2.zero(),
         particleColor: Colors.grey.shade400);
