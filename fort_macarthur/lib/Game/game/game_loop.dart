@@ -9,6 +9,7 @@ import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
 import '../models/upgrades.dart';
+import '../models/collisionChecker.dart';
 
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
@@ -19,8 +20,10 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
+  List<EnemyPlane> enemies = [];
 
   var ammoManager = new AmmunitionManager();
+  Collider checker = new Collider();
 
   TextPaint textPaint = TextPaint(
       config: TextPaintConfig(
@@ -37,10 +40,16 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
       add(healthbar);
 
       for (var i = 0; i < enemyCount; i++) {
-        add(EnemyPlane(size, healthbar));
+        enemies.add(EnemyPlane(size, healthbar));
+      }
+
+      for (var i = 0; i < enemies.length; i++) {
+        add(enemies[i]);
+        checker.addObjectToCheck(enemies[i], CollType.Plane);
       }
 
       missileSystem.baseInit(size);
+      checker.addObjectToCheck(missileSystem.missile, CollType.Missile);
 
       ammoManager.ammo += finalTallyAmmo;
       healthbar.upgradeHealth(finalTallyHealth);
@@ -105,6 +114,8 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   // updates game
   void update(double dt) {
     super.update(dt);
+
+    checker.update(dt);
 
     if (missileSystem.wasLaunched) {
       ammoManager.decreaseAmmo(1);
