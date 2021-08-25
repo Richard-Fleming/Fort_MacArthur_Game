@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
+//import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
@@ -13,9 +14,7 @@ import '../models/upgrades.dart';
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   MissileSystem missileSystem = new MissileSystem();
-
   int enemyCount = 3;
-
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
@@ -35,13 +34,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
       // put image loading, class initialization here
       healthbar = HealthBar(size.x / 1.5, size.y - 50);
       add(healthbar);
-
       for (var i = 0; i < enemyCount; i++) {
         add(EnemyPlane(size, healthbar));
       }
       missileSystem.baseInit(size);
 
-      ammoManager.ammo += finalTallyAmmo;
+      ammoManager.ammoLeft += finalTallyAmmo;
       healthbar.upgradeHealth(finalTallyHealth);
     }
   }
@@ -112,9 +110,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
 
     missileSystem.update(dt);
     healthbar.update(dt);
+    // Test quiz
+    //if (healthbar.getHealth() == 0 || ammoManager.getAmmo() == 0) {
+    //overlays.add(QuizMenu.ID);
 
     if (healthbar.getHealth() == 0 ||
-        (ammoManager.ammo == 0 && !missileSystem.missileLaunched)) {
+        (ammoManager.getAmmo() == 0 && !missileSystem.missileLaunched)) {
       overlays.add(GameOverMenu.ID);
     }
   }

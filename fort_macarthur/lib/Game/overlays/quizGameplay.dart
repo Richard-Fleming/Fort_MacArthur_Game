@@ -1,17 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'device.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fort_macarthur/resultpages.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:fort_macarthur/Game/game/game_loop.dart';
+import 'package:fort_macarthur/Game/gamescreens/mainmenu.dart';
+import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
+
+import '../../device.dart';
+import 'quiz_Results.dart';
 
 class GetJson extends StatelessWidget {
   // accept the langname as a parameter
 
-  final String battname;
-  GetJson(this.battname);
+  final String quizName;
+  final GameLoop gameRef;
+  GetJson(this.quizName, this.gameRef);
   late String assettoload;
   late int i;
   var randomArray;
@@ -20,11 +26,11 @@ class GetJson extends StatelessWidget {
   // sets the asset to a particular JSON file
   // and opens the JSON
   setasset() {
-    if (battname == "Battery Osgood - Farley") {
+    if (quizName == "Battery Osgood - Farley") {
       assettoload = "assets/Quiz/Battery_Osgood.json";
-    } else if (battname == "Battery Barlow - Saxton") {
+    } else if (quizName == "Battery Barlow - Saxton") {
       assettoload = "assets/Quiz/Battery_Barlow_Saxton.json";
-    } else if (battname == "Battery Leary - Merriam") {
+    } else if (quizName == "Battery Leary - Merriam") {
       assettoload = "assets/Quiz/Battery_Leary_Merriam.json";
     }
   }
@@ -68,39 +74,46 @@ class GetJson extends StatelessWidget {
             ),
           );
         }
-        return Quizpage(mydata: mydata, i: i, randomArray: randomArray);
+        return QuizGameplay(
+            mydata: mydata, i: i, randomArray: randomArray, gameRef: gameRef);
       },
     );
   }
 }
 
-class Quizpage extends StatefulWidget {
+class QuizGameplay extends StatefulWidget {
   final List mydata;
   final int i;
   final List randomArray;
+  final GameLoop gameRef;
 
-  Quizpage(
+  QuizGameplay(
       {Key? key,
       required this.mydata,
       required this.i,
-      required this.randomArray})
+      required this.randomArray,
+      required this.gameRef})
       : super(key: key);
+
   @override
-  _QuizpageState createState() => _QuizpageState(mydata, i, randomArray);
+  _QuizGameplayState createState() =>
+      _QuizGameplayState(mydata, i, randomArray, gameRef);
 }
 
-class _QuizpageState extends State<Quizpage> {
+class _QuizGameplayState extends State<QuizGameplay> {
   final List mydata;
   late int i;
   final List randomArray;
-  _QuizpageState(this.mydata, this.i, this.randomArray);
+  final GameLoop gameRef;
+
+  _QuizGameplayState(this.mydata, this.i, this.randomArray, this.gameRef);
 
   Color colortoshow = Colors.indigoAccent;
   Color right = Colors.green;
   Color wrong = Colors.red;
   int marks = 0;
   bool disableAnswer = false;
-
+  bool gameStart = false;
   // extra varibale to iterate
   int j = 1;
   int timer = 30;
@@ -122,8 +135,7 @@ class _QuizpageState extends State<Quizpage> {
   // overriding the initstate function to start timer as this screen is created
   @override
   void initState() {
-    starttimer();
-
+    gameReset();
     super.initState();
   }
 
@@ -132,6 +144,16 @@ class _QuizpageState extends State<Quizpage> {
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
+    }
+  }
+
+  gameReset() {
+    gameStart = true;
+    if (gameStart) {
+      starttimer();
+    } else {
+      j = 1;
+      timer = 30;
     }
   }
 
@@ -153,25 +175,36 @@ class _QuizpageState extends State<Quizpage> {
   }
 
   void nextquestion() {
-    canceltimer = false;
-    timer = 30;
-    setState(() {
-      if (j < 10) {
-        i = randomArray[j];
-        j++;
-        print("The question number is:  $j and the index value of this is $i");
-      } else {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => ResultPage(marks: marks),
-        ));
-      }
-      btncolor["a"] = Colors.indigoAccent;
-      btncolor["b"] = Colors.indigoAccent;
-      btncolor["c"] = Colors.indigoAccent;
-      btncolor["d"] = Colors.indigoAccent;
-      disableAnswer = false;
-    });
-    starttimer();
+    if (gameStart) {
+      canceltimer = false;
+      timer = 30;
+      setState(() {
+        if (j < 10) {
+          i = randomArray[j];
+          j++;
+          print(
+              "The question number is:  $j and the index value of this is $i");
+        } else {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => QuizResults(marks: marks, gameRef: gameRef),
+          ));
+        }
+        btncolor["a"] = Colors.indigoAccent;
+        btncolor["b"] = Colors.indigoAccent;
+        btncolor["c"] = Colors.indigoAccent;
+        btncolor["d"] = Colors.indigoAccent;
+        disableAnswer = false;
+      });
+      starttimer();
+    }
+  }
+
+  String getTime() {
+    return timer.toString();
+  }
+
+  int getMarks() {
+    return marks;
   }
 
   void checkanswer(String k) {
@@ -198,7 +231,9 @@ class _QuizpageState extends State<Quizpage> {
     });
     // nextquestion();
     // changed timer duration to 1 second
-    Timer(Duration(seconds: 2), nextquestion);
+    if (gameStart) {
+      Timer(Duration(seconds: 2), nextquestion);
+    }
   }
 
   Widget choicebutton(String k) {
@@ -229,7 +264,6 @@ class _QuizpageState extends State<Quizpage> {
     );
   }
 
-  @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
@@ -241,14 +275,27 @@ class _QuizpageState extends State<Quizpage> {
                   title: Text(
                     "Quizstar",
                   ),
-                  content: Text("You Can't Go Back At This Stage."),
+                  content: Text("You sure you want to quit?"),
                   actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        gameRef.reset();
+                        gameRef.overlays.remove(QuizMenu.ID);
+                        gameStart = false;
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const MainMenu(),
+                        ));
+                      },
+                      child: Text(
+                        'Yes',
+                      ),
+                    ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                       child: Text(
-                        'Ok',
+                        'No ',
                       ),
                     )
                   ],
@@ -269,6 +316,38 @@ class _QuizpageState extends State<Quizpage> {
                 Expanded(
                   flex: 3,
                   child: Container(
+                    padding: EdgeInsets.all(5.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Time: " + getTime(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontFamily: "Quando",
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(20.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Questions: " + j.toString() + "/10",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontFamily: "Quando",
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
                     padding: EdgeInsets.all(15.0),
                     alignment: Alignment.bottomLeft,
                     child: Text(
@@ -276,7 +355,7 @@ class _QuizpageState extends State<Quizpage> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 26.0,
-                        color: Colors.white,
+                        color: Colors.black,
                         fontFamily: "Quando",
                       ),
                     ),
