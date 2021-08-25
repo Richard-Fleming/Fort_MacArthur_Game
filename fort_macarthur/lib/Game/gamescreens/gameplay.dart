@@ -2,7 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/game/game_loop.dart';
 import 'package:fort_macarthur/Game/overlays/pausebutton.dart';
-//import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
+import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 import '../overlays/pausemenu.dart';
 import '../overlays/game_over_menu.dart';
 
@@ -46,10 +46,8 @@ class GamePlay extends StatelessWidget {
                   gameRef: gameRef,
                   enteredFromGame: enteredFromGame,
                 ),
-            /* QuizMenu.ID: (BuildContext context, GameLoop gameRef) =>
+            QuizMenu.ID: (BuildContext context, GameLoop gameRef) =>
                 QuizMenu(gameRef: gameRef),
-                  enteredFromGame: enteredFromGame,
-                )*/
           },
         ),
       ),
