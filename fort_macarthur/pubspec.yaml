@@ -31,6 +31,7 @@ dependencies:
   url_launcher: ^6.0.3
   flutter_svg: ^0.22.0
   flame: ^1.0.0-releasecandidate.13
+  just_audio: ^0.9.5
 
 dev_dependencies:
   flutter_test:
@@ -56,3 +57,4 @@ flutter:
     - assets/images/svg/
     - assets/logo/
     - assets/Quiz/
+    - assets/sounds/

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/Game/overlays/pausemenu.dart';
 
 import '../game/game_loop.dart';
@@ -24,6 +25,7 @@ class PauseButton extends StatelessWidget {
                 color: Colors.black,
               ),
               onPressed: () {
+                SoundManager.play(SoundFx.uiCancel);
                 gameRef.pauseEngine();
                 gameRef.overlays.add(PauseMenu.ID);
                 gameRef.overlays.remove(PauseButton.ID);

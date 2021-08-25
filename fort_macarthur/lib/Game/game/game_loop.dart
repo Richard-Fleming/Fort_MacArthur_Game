@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
-import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
+//import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
@@ -9,9 +9,10 @@ import 'package:flame/components.dart'; // Needed for Anchor class
 import '../models/healthbar.dart';
 import '../models/enemyplane.dart';
 import '../models/missile_system.dart';
+import '../models/upgrades.dart';
 
 // main game loop. pan detector necessary for touch detection
-class GameLoop extends BaseGame with PanDetector, TapDetector {
+class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   MissileSystem missileSystem = new MissileSystem();
   int enemyCount = 3;
   bool isPressed = false;
@@ -37,6 +38,9 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
         add(EnemyPlane(size, healthbar));
       }
       missileSystem.baseInit(size);
+
+      ammoManager.ammoLeft += finalTallyAmmo;
+      healthbar.upgradeHealth(finalTallyHealth);
     }
   }
 
@@ -63,16 +67,22 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
 
   // drag motion started
   void onPanStart(DragStartInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.setupDestination(details);
   }
 
   // continued touch dragging movement
   void onPanUpdate(DragUpdateInfo details) {
+    isPressed = true;
+    healthbar.setFade(isPressed);
     missileSystem.moveDestination(details);
   }
 
   // when the touch ends
   void onPanEnd(DragEndInfo details) {
+    isPressed = false;
+    healthbar.setFade(isPressed);
     missileSystem.launchMissile();
   }
 
@@ -81,6 +91,7 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
     missileSystem.reset();
 
     components.whereType<EnemyPlane>().forEach((enemyPlane) {
+      enemyPlane.stopSound();
       enemyPlane.remove();
     });
 
@@ -91,10 +102,21 @@ class GameLoop extends BaseGame with PanDetector, TapDetector {
   // updates game
   void update(double dt) {
     super.update(dt);
+
+    if (missileSystem.wasLaunched) {
+      ammoManager.decreaseAmmo(1);
+      missileSystem.wasLaunched = false;
+    }
+
     missileSystem.update(dt);
     healthbar.update(dt);
-    if (healthbar.getHealth() == 0 || ammoManager.getAmmo() == 0) {
-      overlays.add(QuizMenu.ID);
+    // Test quiz
+    //if (healthbar.getHealth() == 0 || ammoManager.getAmmo() == 0) {
+    //overlays.add(QuizMenu.ID);
+
+    if (healthbar.getHealth() == 0 ||
+        (ammoManager.getAmmo() == 0 && !missileSystem.missileLaunched)) {
+      overlays.add(GameOverMenu.ID);
     }
   }
 
