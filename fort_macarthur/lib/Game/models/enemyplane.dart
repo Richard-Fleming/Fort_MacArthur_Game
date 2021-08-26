@@ -35,6 +35,11 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   bool initialSpawn = true;
 
+  // Time between starting
+  double timeToRespawn = 0;
+  // Max time that it can take before a plane starts again
+  int maxTimeBetweenRespawn = 4;
+
   late HealthBar healthbar;
 
   GameSoundEffect planeSound = new GameSoundEffect(
@@ -43,6 +48,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     volume: 0.8,
   );
 
+  // the last picked starting point
+  int startingpoint = 0;
+
   bool playSoundOnce = true;
 
   // plane body
@@ -50,7 +58,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   late TrailParticleSystem particles;
 
-  late Vector2 spawnPos;
+  // starting points -- add more if needed
+  final List<Vector2> spawnPos;
 
   EnemyPlane(
     this.screenSize,
@@ -60,13 +69,13 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   }) {
     size = Vector2(bodySize, bodySize);
     hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = spawnPos;
+    hitbox.offsetPosition = spawnPos[0];
 
     addShape(hitbox);
 
     hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = spawnPos;
-    hitbox.position = spawnPos;
+    hitbox.offsetPosition = spawnPos[0];
+    hitbox.position = spawnPos[0];
 
     resetPlane();
 
@@ -86,12 +95,15 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void update(double dt) {
     super.update(dt);
 
-    hitbox.offsetPosition.add(dir * speed * dt);
-    hitbox.component.position = hitbox.offsetPosition;
-    position = hitbox.offsetPosition;
-    planeSound.play();
+    if (timeToRespawn <= 0) {
+      hitbox.offsetPosition.add(dir * speed * dt);
+      hitbox.component.position = hitbox.offsetPosition;
+      position = hitbox.offsetPosition;
+      planeSound.play();
+    } else
+      timeToRespawn -= dt;
 
-    if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
+    if (hitbox.position.y > screenSize.y + hitbox.size.y) {
       planeSound.stop();
       resetPlane();
     }
@@ -112,8 +124,13 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
-    hitbox.offsetPosition = spawnPos;
-    hitbox.position = hitbox.offsetPosition;
+    // generates num between 0 and 2
+    startingpoint = Random().nextInt(spawnPos.length);
+    hitbox.offsetPosition = spawnPos[startingpoint];
+
+    position = Vector2(spawnPos[startingpoint].x, spawnPos[startingpoint].y);
+    hitbox.offsetPosition = spawnPos[0];
+
     position = hitbox.offsetPosition;
 
     // Now that the plane has been set up at the top,
@@ -122,6 +139,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
     // With all info required, now find the normalized path
     determinePath();
+
+    var random = new Random(); // needed to allow access for static variables
+    timeToRespawn = random.nextDouble() * maxTimeBetweenRespawn;
 
     // only damage the health bar if the plane was not destroyed on this reset
     // and it isn't the plane's first time spawning in
@@ -145,6 +165,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     }
 
     bottomPosition = new Vector2(newPos, screenSize.y);
+    print(
+        "Bottom of where the movement vector is: " + bottomPosition.toString());
   }
 
   // Determines the line towards the end position based on the start position
@@ -152,7 +174,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // Use the newly determined bottom point
     // against the chosen starting point
     // in order to gauge the line towards the bottom from the start.
-    dir = (bottomPosition - spawnPos).normalized();
+    dir = (bottomPosition - spawnPos[startingpoint]).normalized();
   }
 
   @override
@@ -167,6 +189,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void reset() {
     initialSpawn = true;
     resetPlane();
+    print("Plane reset");
   }
 
   void stopSound() {
