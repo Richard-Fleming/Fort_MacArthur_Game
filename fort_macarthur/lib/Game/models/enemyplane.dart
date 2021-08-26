@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/models/enemy_data.dart';
 import 'package:fort_macarthur/Game/models/missile.dart';
 import 'package:fort_macarthur/Game/models/sound_manager.dart';
 import 'package:fort_macarthur/game/models/trail_particles.dart';
@@ -13,17 +12,25 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // size of hitbox
   final double bodySize = 40.0;
 
+  // starting points -- add more if needed
+  final List<Vector2> startpoints = [];
+
+  // the last picked starting point
+  int startingpoint = 0;
+
   // size of the device screen
   final Vector2 screenSize;
 
-  // Stores dynamic variables for different enemy types
-  late EnemyData enemyData;
-
-  // heading vector
-  Vector2 dir = Vector2.zero();
+  // Time between starting
+  double timeToRespawn = 0;
+  // Max time that it can take before a plane starts again
+  int maxTimeBetweenRespawn = 4;
 
   // vector of determined end position
   Vector2 bottomPosition = Vector2.zero();
+
+  // heading vector
+  Vector2 dir = Vector2.zero();
 
   // position used for the particles
   Vector2 position = Vector2.zero();
@@ -31,14 +38,8 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   // speed at which plane approaches end position
   double speed = 160;
 
-  bool destroyed = false;
-
   bool initialSpawn = true;
-
-  // Time between starting
-  double timeToRespawn = 0;
-  // Max time that it can take before a plane starts again
-  int maxTimeBetweenRespawn = 4;
+  bool destroyed = false;
 
   late HealthBar healthbar;
 
@@ -48,9 +49,6 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     volume: 0.8,
   );
 
-  // the last picked starting point
-  int startingpoint = 0;
-
   bool playSoundOnce = true;
 
   // plane body
@@ -58,24 +56,22 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
 
   late TrailParticleSystem particles;
 
-  // starting points -- add more if needed
-  final List<Vector2> spawnPos;
+  EnemyPlane(this.screenSize, this.healthbar) {
+    startpoints.add(Vector2(bodySize, -60.0)); // left starting point
+    startpoints.add(Vector2(
+        (screenSize.x / 2.0) - (bodySize / 2), -60.0)); // middle starting point
+    startpoints.add(
+        Vector2(screenSize.x - (bodySize * 2), -60.0)); // right starting point)
 
-  EnemyPlane(
-    this.screenSize,
-    this.healthbar,
-    this.spawnPos, {
-    required this.enemyData,
-  }) {
     size = Vector2(bodySize, bodySize);
     hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = spawnPos[0];
-
+    hitbox.offsetPosition = startpoints[0];
     addShape(hitbox);
 
     hitbox.size = Vector2(bodySize, bodySize);
-    hitbox.offsetPosition = spawnPos[0];
-    hitbox.position = spawnPos[0];
+
+    hitbox.offsetPosition = startpoints[0];
+    hitbox.position = startpoints[0];
 
     resetPlane();
 
@@ -96,14 +92,15 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     super.update(dt);
 
     if (timeToRespawn <= 0) {
-      hitbox.offsetPosition.add(dir * speed * dt);
-      hitbox.component.position = hitbox.offsetPosition;
-      position = hitbox.offsetPosition;
+      hitbox.offsetPosition = Vector2(
+          hitbox.offsetPosition.x + (dir.x * speed) * dt,
+          hitbox.offsetPosition.y + (dir.y * speed) * dt);
+      position.add(Vector2((dir.x * speed) * dt, (dir.y * speed) * dt));
       planeSound.play();
     } else
       timeToRespawn -= dt;
 
-    if (hitbox.position.y > screenSize.y + hitbox.size.y) {
+    if (hitbox.offsetPosition.y > screenSize.y + hitbox.size.y) {
       planeSound.stop();
       resetPlane();
     }
@@ -117,7 +114,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   void render(Canvas c) {
     super.render(c);
     // TODO: Remove this once a proper sprite is in order for the Enemy Plane
-    hitbox.render(c, Paint()..color = enemyData.color);
+    hitbox.render(c, Paint()..color = Colors.red);
 
     particles.render(c);
   }
@@ -125,13 +122,11 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   /// Resets Enemy Plane to a New Position
   void resetPlane() {
     // generates num between 0 and 2
-    startingpoint = Random().nextInt(spawnPos.length);
-    hitbox.offsetPosition = spawnPos[startingpoint];
+    startingpoint = Random().nextInt(startpoints.length);
+    hitbox.offsetPosition = startpoints[startingpoint];
 
-    position = Vector2(spawnPos[startingpoint].x, spawnPos[startingpoint].y);
-    hitbox.offsetPosition = spawnPos[0];
-
-    position = hitbox.offsetPosition;
+    position =
+        Vector2(startpoints[startingpoint].x, startpoints[startingpoint].y);
 
     // Now that the plane has been set up at the top,
     // we will now determine a bottom position
@@ -165,8 +160,6 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     }
 
     bottomPosition = new Vector2(newPos, screenSize.y);
-    print(
-        "Bottom of where the movement vector is: " + bottomPosition.toString());
   }
 
   // Determines the line towards the end position based on the start position
@@ -174,7 +167,7 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
     // Use the newly determined bottom point
     // against the chosen starting point
     // in order to gauge the line towards the bottom from the start.
-    dir = (bottomPosition - spawnPos[startingpoint]).normalized();
+    dir = (bottomPosition - startpoints[startingpoint]).normalized();
   }
 
   @override
@@ -187,16 +180,11 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
   }
 
   void reset() {
-    initialSpawn = true;
+    timeToRespawn = 0;
     resetPlane();
-    print("Plane reset");
   }
 
   void stopSound() {
     planeSound.stop();
-  }
-
-  Vector2 getPosition() {
-    return hitbox.position;
   }
 }

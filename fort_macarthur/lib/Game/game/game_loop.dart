@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:fort_macarthur/Game/models/enemyManager.dart';
 import 'package:fort_macarthur/Game/overlays/game_over_menu.dart';
+//import 'package:fort_macarthur/Game/overlays/quizMenu.dart';
 import '../models/ammo.dart';
 import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
@@ -14,15 +14,11 @@ import '../models/upgrades.dart';
 // main game loop. pan detector necessary for touch detection
 class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
   MissileSystem missileSystem = new MissileSystem();
-
   int enemyCount = 3;
-
-  // Stores a reference to an enemy manager component.
-  late EnemyManager _enemyManager;
-
   bool isPressed = false;
   bool isAlreadyLoaded = false;
   late HealthBar healthbar;
+  late EnemyPlane enemy;
 
   var ammoManager = new AmmunitionManager();
 
@@ -39,13 +35,11 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
       // put image loading, class initialization here
       healthbar = HealthBar(size.x / 1.5, size.y - 50);
       add(healthbar);
-
-      _enemyManager = EnemyManager(size, healthbar);
-      add(_enemyManager);
-
+      enemy = EnemyPlane(size, healthbar);
+      add(enemy);
       missileSystem.baseInit(size);
 
-      ammoManager.ammo += finalTallyAmmo;
+      ammoManager.ammoLeft += finalTallyAmmo;
       healthbar.upgradeHealth(finalTallyHealth);
     }
   }
@@ -116,9 +110,12 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
 
     missileSystem.update(dt);
     healthbar.update(dt);
+    // Test quiz
+    //if (healthbar.getHealth() == 0 || ammoManager.getAmmo() == 0) {
+    //overlays.add(QuizMenu.ID);
 
     if (healthbar.getHealth() == 0 ||
-        (ammoManager.ammo == 0 && !missileSystem.missileLaunched)) {
+        (ammoManager.getAmmo() == 0 && !missileSystem.missileLaunched)) {
       overlays.add(GameOverMenu.ID);
     }
   }
@@ -131,6 +128,10 @@ class GameLoop extends BaseGame with PanDetector, TapDetector, HasCollidables {
     healthbar.render(canvas);
 
     //TODO: Remove this when proper Enemy Manager is implemented.
+
+    textPaint.render(
+        canvas, enemyCount.toString() + ' Enemies That Remain', Vector2(95, 10),
+        anchor: Anchor.topCenter);
   }
 
   // changes the background color

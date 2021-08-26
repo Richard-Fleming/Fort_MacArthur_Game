@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 
 class AmmunitionManager {
   final buttonSize = Vector2(30, 30);
-  int ammo = 5;
+  int ammoLeft = 5;
   TextPaint textPaint = TextPaint(
       config: TextPaintConfig(
     fontSize: 24.0,
@@ -15,7 +15,7 @@ class AmmunitionManager {
   ));
 
   void reset() {
-    ammo = 5;
+    ammoLeft = 5;
   }
 
   void onTapDown(TapDownInfo event) {
@@ -25,21 +25,25 @@ class AmmunitionManager {
   }
 
   increaseAmmo(int value) {
-    if (ammo < 20) {
-      ammo += value;
+    if (ammoLeft < 20) {
+      ammoLeft += value;
     }
   }
 
   decreaseAmmo(int value) {
-    if (ammo > 0) {
-      ammo -= value;
+    if (ammoLeft > 0) {
+      ammoLeft -= value;
     }
   }
 
   draw(Canvas canvas) {
-    textPaint.render(canvas, ammo.toString() + '/20', Vector2(300, 500),
+    textPaint.render(canvas, ammoLeft.toString() + '/20', Vector2(300, 500),
         anchor: Anchor.topCenter);
   }
 
   update(double dt) {}
+
+  int getAmmo() {
+    return ammoLeft;
+  }
 }
