@@ -105,9 +105,9 @@ class EnemyPlane extends PositionComponent with Hitbox, Collidable {
         resetPlane();
       }
     }
-    particles.update(dt);
     particles.updatePosition(hitbox.offsetPosition + Vector2.all(bodySize / 2));
     particles.updateDirection(-dir);
+    particles.update(dt);
   }
 
   @override
